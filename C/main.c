@@ -42,7 +42,6 @@ void keypress(unsigned char key, int x, int y) {
 			updateColors();
 			return;
 		}
-		//clear screen
 		break;
 
 	case '>': case '.':
@@ -62,13 +61,20 @@ void keypress(unsigned char key, int x, int y) {
 	set_texture();
 }
  
-void hsv_to_rgb(float hue, float sat, float var, rgb_t *pixel)
+double modOne(double a) {
+	return a - floor(a);
+}
+
+void hsv_to_rgb(double hue, double sat, double var, rgb_t *pixel)
 {
+	hue = modOne(hue);
+	sat = modOne(sat);
+	var = modOne(var);
 	int h_i = (hue*6);
-	float f = hue*6 - h_i;
-	float p = var*(1-sat);
-	float q = var*(1-f*sat);
-	float t = var*(1-(1-f)*sat);
+	double f = hue*6 - h_i;
+	double p = var*(1-sat);
+	double q = var*(1-f*sat);
+	double t = var*(1-(1-f)*sat);
 
 	switch (h_i) {
 		case 0:
@@ -122,9 +128,9 @@ void getSmoothedColor(double zx, double zy, double zx2, double zy2, rgb_t *p) {
 
 	//decide which is between z and z2
  if ((zx2-x1)*(zx2-x1) + (zy2-y1)*(zy2-y1) < (zx2-x2)*(zx2-x2) + (zy2-y2)*(zy2-y2)) {
-		hsv_to_rgb((atan2(y1, x1) + PI) / (2*PI) + 0.3, 1, 1, p);
+		hsv_to_rgb((atan2(y1, x1) + PI) / (2*PI) + 0.3, .99, .99, p);
 	}else {
-		hsv_to_rgb((atan2(y2, x2) + PI) / (2*PI), 1, 1, p);
+		hsv_to_rgb((atan2(y2, x2) + PI) / (2*PI), .99, .99, p);
 	}
 }
 
@@ -182,7 +188,7 @@ void getColor(double zx, double zy, double zx2, double zy2, int iter, int prev_i
 		break;
 	case 3: //Contour of iterations!
 		if (iter != prev_iter) {
-			iter += mVar->color_rotate*5;
+			iter += mVar->color_rotate*10;
 			hsv_to_rgb(iter/(float)mVar->max_iter, 0.99, 0.99, p);
 		} else {
 			p->r = 0;
@@ -191,7 +197,10 @@ void getColor(double zx, double zy, double zx2, double zy2, int iter, int prev_i
 		}
 		break;
 	case 4: //Crazy hue party
-		hsv_to_rgb(atan2(zy, zx) / PI + mVar->color_rotate / 16.0, 1, (zx2 + zy2) / 16.0, p);
+		if (iter == mVar->max_iter)
+			p->r = p->g = p->b = 0;
+		else
+			hsv_to_rgb(atan2(zy, zx) / PI + mVar->color_rotate / 16.0, .99, (zx2 + zy2) / 4.0, p);
 		break;
 	}
 }
