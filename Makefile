@@ -1,9 +1,13 @@
+FLAGS = -Wall -Werror
 LFLAGS = -lglut -lGLU -lGL -lm
+OBJS = C/graphics.o C/main.o
+CXX = gcc
 
-all: Mandelbrot DrawComplex
+%.o: %.c %.h C/defs.h
+	$(CXX) $(FLAGS) -c -s $< -o $@
 
-Mandelbrot: C/mandelbrot.c
-	gcc C/mandelbrot.c -o $@ $(LFLAGS)
+Mandelbrot: $(OBJS)
+	$(CXX) $(OBJS) -o $@ $(LFLAGS)
 
-DrawComplex: C/drawComplex.c
-	gcc C/drawComplex.c -o $@ $(LFLAGS)
+clean:
+	rm $(OBJS) Mandelbrot
