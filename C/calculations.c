@@ -7,7 +7,7 @@ void calcFractalSet(int width, int height, rgb_t **tex, int **texIter, int scree
 	int i, j, iter, prev_iter, bottom, top;
 	//I need to think of less confusing names than 'center' and 'middle'
 	int centerX, centerY; //Pixel coordinates of center (only changes based on width, height, and screenFlags)
-	int middleX, middleY; //real and imaginary parts of the center point (only changes with clicking and zooming)
+	double middleX, middleY; //real and imaginary parts of the center point (only changes with clicking and zooming)
 	rgb_t *px;
 	double x, y, zx, zy, zx2, zy2, zoom;
 	switch (screenFlags) {
@@ -26,11 +26,11 @@ void calcFractalSet(int width, int height, rgb_t **tex, int **texIter, int scree
 	}
 	centerX = (width) / 2; //Figure out where the origin is
 	centerY = (top + bottom) / 2;
-			middleX = mVar->cx;
-			middleY = mVar->cy;
 	switch (fractalType) {
 		case MANDELBROT:
-			zoom = mVar->zoomM; break;
+			zoom = mVar->zoomM;
+			middleX = mVar->cx;
+			middleY = mVar->cy; break;
 		case JULIA:
 			zoom = mVar->zoomJ;
 			middleX = mVar->z1x;
