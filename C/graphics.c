@@ -1,7 +1,6 @@
 #include "graphics.h"
 
-extern void calc_mandel();
-extern void calc_julia();
+extern void calcFractalSet(int w, int h, rgb_t **tex, int **texIter, int screenFlags, int fractalType);
 
 void render()
 {
@@ -43,8 +42,8 @@ void alloc_tex()
 void set_texture()
 {
 	alloc_tex();
-	calc_julia();
-	calc_mandel();
+	calcFractalSet(mVar->width, mVar->height, mVar->tex, mVar->texIter, TOP_HALF, MANDELBROT);
+	calcFractalSet(mVar->width, mVar->height, mVar->tex, mVar->texIter, BOTTOM_HALF, JULIA);
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, mVar->texture);

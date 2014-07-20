@@ -5,8 +5,6 @@ extern void alloc_tex();
 extern void set_texture();
 extern void resize(int w, int h);
 extern void getColor(double zx, double zy, double zx2, double zy2, int iter, int prev_iter, rgb_t *p);
-extern void calc_mandel();
-extern void calc_julia();
 
 void set_texture();
 void updateColors();

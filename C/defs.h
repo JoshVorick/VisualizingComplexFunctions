@@ -4,7 +4,18 @@
 #include <GL/freeglut.h>
 
 #define PI 3.14159265
-//bignum library for big numbers
+
+enum calculationsFlags {
+	WHOLE_SCREEN,
+	TOP_HALF,
+	BOTTOM_HALF
+};
+
+enum fractalSets {
+	MANDELBROT,
+	JULIA
+};
+//bignum library for big numbers??
  
 /* A,B,... for coefficients of derivatives of Mandelbrot Set and Julia Sets */
 #define A 1 //c	 
