@@ -15,6 +15,15 @@ enum fractalSets {
 	MANDELBROT,
 	JULIA
 };
+
+#define NUM_FUNCTIONS 4
+
+enum functionTypes {
+	MANDEL_AND_JULIA,
+	SINE,
+	TANGENT,
+	COOL_FUNCTION
+};
 //bignum library for big numbers??
  
 /* A,B,... for coefficients of derivatives of Mandelbrot Set and Julia Sets */
@@ -31,6 +40,10 @@ typedef struct {
 } rgb_t;
 
 typedef struct {
+	double x, y;
+} complex_num;
+
+typedef struct {
 	rgb_t **tex;
 	int **texIter;
 	int gwin;
@@ -40,6 +53,7 @@ typedef struct {
 	double zoomM, zoomJ, zoomF; //Scale for Mandelbrot Set, Julia Sets, and the other complex function(s)
 	double cx, cy; //Initial value for c in f(x) = z^2 + c 
 	double z1x, z1y; //Initial value of z
+	int function;
 	int color_rotate;
 	int color_scheme;
 	int max_iter;

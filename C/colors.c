@@ -85,9 +85,9 @@ void getColor(double zx, double zy, double zx2, double zy2, int iter, int prev_i
 			iter += mVar->color_rotate;
 			switch(iter % 16) {
 			case 0: p->r = 66;	p->g = 30;	p->b = 15;break;
-			case 1: p->r = 25;	p->g = 7;		p->b = 26;break;
-			case 2: p->r = 9; 	p->g = 1;		p->b = 47;break;
-			case 3: p->r = 4; 	p->g = 4;		p->b = 73;break;
+			case 1: p->r = 25;	p->g = 7; 	p->b = 26;break;
+			case 2: p->r = 9; 	p->g = 1; 	p->b = 47;break;
+			case 3: p->r = 4; 	p->g = 4; 	p->b = 73;break;
 			case 4: p->r = 0; 	p->g = 7; 	p->b = 100;break;
 			case 5: p->r = 12;	p->g = 44;	p->b = 138;break;
 			case 6: p->r = 24;	p->g = 82;	p->b = 177;break;
@@ -113,11 +113,11 @@ void getColor(double zx, double zy, double zx2, double zy2, int iter, int prev_i
 			case 1: p->r = 255;	p->g = 127;	p->b = 0;break;
 			case 2: p->r = 255;	p->g = 255;	p->b = 0;break;
 			case 3: p->r = 127;	p->g = 255;	p->b = 0;break;
-			case 4: p->r = 0;		p->g = 255;	p->b = 0;break;
-			case 5: p->r = 0;		p->g = 255;	p->b = 127;break;
-			case 6: p->r = 0;		p->g = 255;	p->b = 255;break;
-			case 7: p->r = 0;		p->g = 127;	p->b = 255;break;
-			case 8: p->r = 0;		p->g = 0; 	p->b = 255;break;
+			case 4: p->r = 0; 	p->g = 255;	p->b = 0;break;
+			case 5: p->r = 0; 	p->g = 255;	p->b = 127;break;
+			case 6: p->r = 0; 	p->g = 255;	p->b = 255;break;
+			case 7: p->r = 0; 	p->g = 127;	p->b = 255;break;
+			case 8: p->r = 0; 	p->g = 0; 	p->b = 255;break;
 			case 9: p->r = 127;	p->g = 0; 	p->b = 255;break;
 			case 10:p->r = 255;	p->g = 0; 	p->b = 255;break;
 			default:p->r = 255;	p->g = 0; 	p->b = 127;

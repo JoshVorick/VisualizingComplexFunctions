@@ -1,6 +1,7 @@
 #include "graphics.h"
 
 extern void calcFractalSet(int w, int h, rgb_t **tex, int **texIter, int screenFlags, int fractalType);
+extern void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, int functionType);
 
 void render()
 {
@@ -39,11 +40,17 @@ void alloc_tex()
 		mVar->tex[i] = mVar->tex[i - 1] + mVar->tex_w;
 }
 
-void set_texture()
-{
+void set_texture() {
+	printf("Rendering...\n");
 	alloc_tex();
-	calcFractalSet(mVar->width, mVar->height, mVar->tex, mVar->texIter, TOP_HALF, MANDELBROT);
-	calcFractalSet(mVar->width, mVar->height, mVar->tex, mVar->texIter, BOTTOM_HALF, JULIA);
+	switch (mVar->function) {
+		case MANDEL_AND_JULIA:
+			calcFractalSet(mVar->width, mVar->height, mVar->tex, mVar->texIter, TOP_HALF, MANDELBROT);
+			calcFractalSet(mVar->width, mVar->height, mVar->tex, mVar->texIter, BOTTOM_HALF, JULIA);
+			break;
+		default:
+			calcComplexFunction(mVar->width, mVar->height, mVar->tex, WHOLE_SCREEN, mVar->function);
+	}
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, mVar->texture);
@@ -53,6 +60,7 @@ void set_texture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	render();
+	printf("Done!\n");
 }
  
 void resize(int w, int h)

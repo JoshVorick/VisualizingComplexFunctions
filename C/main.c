@@ -31,7 +31,7 @@ void keypress(unsigned char key, int x, int y) {
 			case 0: mVar->color_rotate %= 16; break;
 			case 1: mVar->color_rotate %= 12; break;
 		}
-		if (mVar->color_scheme < 3) {
+		if (mVar->function == MANDEL_AND_JULIA && mVar->color_scheme < 3) {
 			updateColors();
 			return;
 		}
@@ -39,10 +39,16 @@ void keypress(unsigned char key, int x, int y) {
 
 	case 'e':
 		mVar->color_scheme = (mVar->color_scheme + 1) % 5;
-		if (mVar->color_scheme < 3) {
+		if (mVar->function == MANDEL_AND_JULIA && mVar->color_scheme < 3) {
 			updateColors();
 			return;
 		}
+		break;
+
+	case 'w':
+		mVar->function = (mVar->function + 1) % NUM_FUNCTIONS;
+		mVar->cx = mVar->cy = 0;
+		mVar->zoomM = 1./128;
 		break;
 
 	case '>': case '.':
@@ -66,15 +72,21 @@ void mouseclick(int button, int state, int x, int y) {
 	if(state != GLUT_UP) 
 		return; 
 
-	if(y < mVar->height/2){ //Mandelbrot is clicked
+	if (mVar->function == MANDEL_AND_JULIA) {
+		if(y < mVar->height/2){ //Mandelbrot is clicked
+			mVar->cx += (x - mVar->width/2) * 2 * mVar->zoomM;
+			mVar->cy -= (y - mVar->height/4) * 2 * mVar->zoomM;
+			printf("c = %f + %fi\n", mVar->cx, mVar->cy);
+		}
+		else{ // Julia Set was clicked
+			mVar->z1x += (x - mVar->width/2) * mVar->zoomJ;
+			mVar->z1y -= (y - 3*mVar->height/4) * mVar->zoomJ;
+			printf("z1 = %f + %fi\n", mVar->z1x, mVar->z1y);
+		}
+	} else {
 		mVar->cx += (x - mVar->width/2) * 2 * mVar->zoomM;
-		mVar->cy -= (y - mVar->height/4) * 2 * mVar->zoomM;
+		mVar->cy -= (y - mVar->height/2) * 2 * mVar->zoomM;
 		printf("c = %f + %fi\n", mVar->cx, mVar->cy);
-	}
-	else{ // Julia Set was clicked
-		mVar->z1x += (x - mVar->width/2) * mVar->zoomJ;
-		mVar->z1y -= (y - 3*mVar->height/4) * mVar->zoomJ;
-		printf("z1 = %f + %fi\n", mVar->z1x, mVar->z1y);
 	}
 	set_texture();
 }
@@ -88,6 +100,7 @@ void init(int *c, char **v) {
 	mVar->cy = 0;
 	mVar->z1x = 0;
 	mVar->z1y = 0;
+	mVar->function = MANDEL_AND_JULIA;
 	mVar->color_rotate = 0;
 	mVar->color_scheme = 0;
 	mVar->max_iter = 128;
