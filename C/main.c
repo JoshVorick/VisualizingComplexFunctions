@@ -5,9 +5,9 @@ extern void alloc_tex();
 extern void set_texture();
 extern void resize(int w, int h);
 extern void getColor(double zx, double zy, double zx2, double zy2, int iter, int prev_iter, rgb_t *p);
+extern void updateColors();
 
 void set_texture();
-void updateColors();
 
 void keypress(unsigned char key, int x, int y) {
 	switch(key) {
@@ -62,28 +62,6 @@ void keypress(unsigned char key, int x, int y) {
 	set_texture();
 }
 
-void updateColors() {
-	if (mVar->color_scheme > 2)
-		return;
-
-	alloc_tex(); 
-	int i, j;
-	rgb_t *px;
-	for(i = 0; i < mVar->height; i++){
-		for (j = 0, px = mVar->tex[i]; j	< mVar->width; j++, px++){
-			getColor(0, 0, 0, 0, mVar->texIter[i][j], 0, px);
-		}
-	}
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, mVar->texture);
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, mVar->tex_w, mVar->tex_h,
-		0, GL_RGB, GL_UNSIGNED_BYTE, mVar->tex[0]);
- 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	render();
-}
- 
 void mouseclick(int button, int state, int x, int y) {
 	if(state != GLUT_UP) 
 		return; 
