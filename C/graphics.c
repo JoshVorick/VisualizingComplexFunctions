@@ -43,14 +43,14 @@ void alloc_tex()
 void set_texture() {
 	printf("Rendering...\n");
 	alloc_tex();
-	switch (mVar->function) {
-		case MANDEL_AND_JULIA:
+	//switch (mVar->function) {
+	//	case MANDEL_AND_JULIA:
 			calcFractalSet(mVar->width, mVar->height, mVar->tex, mVar->texIter, TOP_HALF, MANDELBROT);
 			calcFractalSet(mVar->width, mVar->height, mVar->tex, mVar->texIter, BOTTOM_HALF, JULIA);
-			break;
-		default:
-			calcComplexFunction(mVar->width, mVar->height, mVar->tex, WHOLE_SCREEN, mVar->function);
-	}
+	//		break;
+	//	default:
+	//		calcComplexFunction(mVar->width, mVar->height, mVar->tex, WHOLE_SCREEN, mVar->function);
+	//}
 
 	glEnable(GL_TEXTURE_2D);
 	glBindTexture(GL_TEXTURE_2D, mVar->texture);

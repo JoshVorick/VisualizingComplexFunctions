@@ -4,9 +4,12 @@ extern void getColor(double zx,double zy, double zx2, double zy2, int iter, int 
 extern void hsv_to_rgb(double hue, double sat, double var, rgb_t *pixel);
 
 void calcFractalSet(int width, int height, rgb_t **tex, int **texIter, int screenFlags, int fractalType) {
-	int i, j, iter, prev_iter, bottom, top, centerX, centerY;
+	int i, j, iter, prev_iter, bottom, top;
+	//I need to think of less confusing names than 'center' and 'middle'
+	int centerX, centerY; //Pixel coordinates of center (only changes based on width, height, and screenFlags)
+	int middleX, middleY; //real and imaginary parts of the center point (only changes with clicking and zooming)
 	rgb_t *px;
-	double x, y, zx, zy, zx2, zy2;
+	double x, y, zx, zy, zx2, zy2, zoom;
 	switch (screenFlags) {
 		case WHOLE_SCREEN: 
 			bottom = 0; 
@@ -23,18 +26,23 @@ void calcFractalSet(int width, int height, rgb_t **tex, int **texIter, int scree
 	}
 	centerX = (width) / 2; //Figure out where the origin is
 	centerY = (top + bottom) / 2;
-	
+			middleX = mVar->cx;
+			middleY = mVar->cy;
+	switch (fractalType) {
+		case MANDELBROT:
+			zoom = mVar->zoomM; break;
+		case JULIA:
+			zoom = mVar->zoomJ;
+			middleX = mVar->z1x;
+			middleY = mVar->z1y; break;
+	}	
 	for (i = bottom; i < top; i++) {
 		px = tex[i];
-		y = (i - centerY) * mVar->zoomM + mVar->cy/2;
+		y = (i - centerY) * zoom + middleY;
 		for (j = 0; j	< width; j++, px++) {
-			x = (j - centerX) * mVar->zoomM + mVar->cx/2;
+			x = (j - centerX) * zoom + middleX;
 			iter = 0;
 			
-			if (fractalType == MANDELBROT) { //Saves time by calculating the Set's black center region efficiently
-				zx = hypot(x - .25, y);
-				if (x < zx - 2 * zx * zx + .25 || (x + 1)*(x + 1) + y * y < 1/16) iter = mVar->max_iter;
- 			}
 			switch(fractalType) {
 				case MANDELBROT:
 					zx = mVar->z1x;

@@ -74,20 +74,21 @@ void mouseclick(int button, int state, int x, int y) {
 
 	if (mVar->function == MANDEL_AND_JULIA) {
 		if(y < mVar->height/2){ //Mandelbrot is clicked
-			mVar->cx += (x - mVar->width/2) * 2 * mVar->zoomM;
-			mVar->cy -= (y - mVar->height/4) * 2 * mVar->zoomM;
+			mVar->cx += (x - mVar->width/2.) * mVar->zoomM;
+			mVar->cy -= (y - mVar->height/4.) * mVar->zoomM;
 			printf("c = %f + %fi\n", mVar->cx, mVar->cy);
 		}
 		else{ // Julia Set was clicked
-			mVar->z1x += (x - mVar->width/2) * mVar->zoomJ;
-			mVar->z1y -= (y - 3*mVar->height/4) * mVar->zoomJ;
+			mVar->z1x += (x - mVar->width/2.) * mVar->zoomJ;
+			mVar->z1y -= (y - 3*mVar->height/4.) * mVar->zoomJ;
 			printf("z1 = %f + %fi\n", mVar->z1x, mVar->z1y);
 		}
 	} else {
-		mVar->cx += (x - mVar->width/2) * 2 * mVar->zoomM;
-		mVar->cy -= (y - mVar->height/2) * 2 * mVar->zoomM;
+		mVar->cx += (x - mVar->width/2.) * mVar->zoomM;
+		mVar->cy -= (y - mVar->height/2.) * mVar->zoomM;
 		printf("c = %f + %fi\n", mVar->cx, mVar->cy);
 	}
+
 	set_texture();
 }
 
