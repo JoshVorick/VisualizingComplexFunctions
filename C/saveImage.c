@@ -41,11 +41,11 @@ void saveImage(int width, int height, rgb_t **tex, char *filename) {
 			PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
 
 	// Set title
-	png_text title_text;
-	title_text.compression = PNG_TEXT_COMPRESSION_NONE;
-	title_text.key = "Title";
-	title_text.text = "Colorful image";
-	png_set_text(png_ptr, info_ptr, &title_text, 1);
+	//png_text title_text;
+	//title_text.compression = PNG_TEXT_COMPRESSION_NONE;
+	//title_text.key = "Title";
+	//title_text.text = "Colorful image";
+	//png_set_text(png_ptr, info_ptr, &title_text, 1);
 	
 	png_write_info(png_ptr, info_ptr);
 
@@ -55,7 +55,7 @@ void saveImage(int width, int height, rgb_t **tex, char *filename) {
 	// Write image data
 	int x, y;
 	for (y=height-1 ; y>=0 ; y--) {
-		for (x=0 ; x<width ; x++) {
+		for (x=0 ; x<width-1 ; x++) {
 			row[x*3 + 0] = tex[y][x].r;
 			row[x*3 + 1] = tex[y][x].g;
 			row[x*3 + 2] = tex[y][x].b;

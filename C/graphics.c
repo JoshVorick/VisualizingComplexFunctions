@@ -33,11 +33,16 @@ void alloc_tex()
 	for (mVar->tex_w = 1; mVar->tex_w < mVar->width;	mVar->tex_w <<= 1);
 	for (mVar->tex_h = 1; mVar->tex_h < mVar->height; mVar->tex_h <<= 1);
  
-	if (mVar->tex_h != oh || mVar->tex_w != ow)
+	if (mVar->tex_h != oh || mVar->tex_w != ow) {
 		mVar->tex = (rgb_t**)realloc(mVar->tex, mVar->tex_h * mVar->tex_w * 3 + mVar->tex_h * sizeof(rgb_t*));
- 
+		mVar->texIter = (int**)realloc(mVar->texIter, mVar->tex_h * mVar->tex_w * 3 + mVar->tex_h * sizeof(int*));
+ 	}
+
 	for (mVar->tex[0] = (rgb_t *)(mVar->tex + mVar->tex_h), i = 1; i < mVar->tex_h; i++)
 		mVar->tex[i] = mVar->tex[i - 1] + mVar->tex_w;
+
+	for (mVar->texIter[0] = (int *)(mVar->texIter + mVar->tex_h), i = 1; i < mVar->tex_h; i++)
+		mVar->texIter[i] = mVar->texIter[i - 1] + mVar->tex_w;
 }
 
 void set_texture() {
@@ -72,16 +77,5 @@ void resize(int w, int h)
 	glViewport(0, 0, w, h);
 	glOrtho(0, w, 0, h, -1, 1);
 	
-	mVar->texIter = (int **)malloc(h * sizeof(int*));
-	mVar->texIter = (int **)malloc(h * sizeof(int*));
-	int i,j;
-	for(i=0;i<h;i++){
-		mVar->texIter[i] = (int *)malloc(w * sizeof(int));
-	}
-
-	for(i=0;i<h;i++)	 
-		for(j=0;j<w;j++)
-			mVar->texIter[i][j] = 0;
-
 	set_texture();
 }

@@ -50,6 +50,8 @@ typedef struct {
 	GLuint texture;
 	int width, height;
 	int tex_w, tex_h;
+	int png_w, png_h;
+	int imgCount;
 	double zoomM, zoomJ, zoomF; //Scale for Mandelbrot Set, Julia Sets, and the other complex function(s)
 	double cx, cy; //Initial value for c in f(x) = z^2 + c 
 	double z1x, z1y; //Initial value of z

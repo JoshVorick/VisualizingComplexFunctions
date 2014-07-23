@@ -1,4 +1,4 @@
-FLAGS = -Wall -Werror
+FLAGS = -Wall
 LFLAGS = -lglut -lGLU -lGL -lm -lpng
 OBJS = C/graphics.o C/colors.o C/calculations.o C/saveImage.o C/main.o
 CXX = gcc
