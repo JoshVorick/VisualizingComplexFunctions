@@ -92,7 +92,7 @@ double complex coolFunction1(double complex a, int iter) {
 	return x;
 }
 
-void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, int functionType) {
+void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, int functionType, int colorScheme) {
  	int i, j, bottom, top, centerX, centerY;
 	rgb_t *px;
 	double complex a;
@@ -122,15 +122,28 @@ void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, in
       px->b = 0;
 			switch (functionType) {	
 				case SINE: 
-					hsv_to_rgb((PI + carg(csin(a)))/(2*PI), 0.99, 0.99, px); break;
+					a = csin(a); break;
 				case TANGENT: 
-					hsv_to_rgb((PI + carg(ctan(a)))/(2*PI), 0.99, 0.99, px); break;
+					a = ctan(a); break;
 				case COOL_FUNCTION1: 
-					hsv_to_rgb((PI + carg(coolFunction1(a, 10))/(2*PI)), 0.99, 0.99, px); break;
+					a = coolFunction1(a, 10); break;
 				case COOL_FUNCTION2: 
-					hsv_to_rgb((PI + carg(coolFunction1(a, 15))/(2*PI)), 0.99, 0.99, px); break;
+					a = coolFunction1(a, 5); break;
 				case LINEAR: 
-					hsv_to_rgb((PI + carg(3*a + 1)/(2*PI)), 0.99, 0.99, px); break;
+					a = 3*a + 1; break;
+			}
+			double mag = cabs(a);
+			switch(colorScheme) {
+				case 0:
+					hsv_to_rgb((PI + carg(a))/(2*PI), .99, (PI + sin(2*PI*mag)) / (2*PI), px); break;
+				case 1:
+					hsv_to_rgb((PI + carg(a))/(2*PI), 0.99, 0.99, px); break;
+				case 2:
+					hsv_to_rgb(0, 0.99, (PI + sin(2*PI*mag)) / (2*PI), px); break;
+				case 3:
+					hsv_to_rgb(0, 0, (PI + sin(2*PI*mag)) / (2*PI), px); break;
+				case 4:
+					hsv_to_rgb((PI + carg(a))/(2*PI), 0.99, mag, px); break;
 			}
 		}
 	}

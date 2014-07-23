@@ -1,7 +1,7 @@
 #include "graphics.h"
 
 extern void calcFractalSet(int w, int h, rgb_t **tex, int **texIter, int screenFlags, int fractalType);
-extern void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, int functionType);
+extern void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, int functionType, int colorScheme);
 
 void render()
 {
@@ -54,7 +54,7 @@ void set_texture() {
 			calcFractalSet(mVar->width, mVar->height, mVar->tex, mVar->texIter, BOTTOM_HALF, JULIA);
 			break;
 		default:
-			calcComplexFunction(mVar->width, mVar->height, mVar->tex, WHOLE_SCREEN, mVar->function);
+			calcComplexFunction(mVar->width, mVar->height, mVar->tex, WHOLE_SCREEN, mVar->function, mVar->color_scheme);
 	}
 
 	glEnable(GL_TEXTURE_2D);
