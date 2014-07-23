@@ -6,6 +6,7 @@ extern void set_texture();
 extern void resize(int w, int h);
 extern void getColor(double zx, double zy, double zx2, double zy2, int iter, int prev_iter, rgb_t *p);
 extern void updateColors();
+extern void saveImage(int width, int height, rgb_t **tex, char *filename);
 
 void set_texture();
 
@@ -63,6 +64,10 @@ void keypress(unsigned char key, int x, int y) {
 		if (mVar->max_iter < 128) 
 			mVar->max_iter = 128;
 		printf("max iter: %d\n", mVar->max_iter);
+		break;
+		
+	case 'd':
+		saveImage(mVar->width, mVar->height, mVar->tex, "savedImage.png");
 		break;
 	}
 	set_texture();
