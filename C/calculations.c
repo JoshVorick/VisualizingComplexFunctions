@@ -125,8 +125,12 @@ void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, in
 					hsv_to_rgb((PI + carg(csin(a)))/(2*PI), 0.99, 0.99, px); break;
 				case TANGENT: 
 					hsv_to_rgb((PI + carg(ctan(a)))/(2*PI), 0.99, 0.99, px); break;
-				case COOL_FUNCTION: 
+				case COOL_FUNCTION1: 
 					hsv_to_rgb((PI + carg(coolFunction1(a, 10))/(2*PI)), 0.99, 0.99, px); break;
+				case COOL_FUNCTION2: 
+					hsv_to_rgb((PI + carg(coolFunction1(a, 15))/(2*PI)), 0.99, 0.99, px); break;
+				case LINEAR: 
+					hsv_to_rgb((PI + carg(3*a + 1)/(2*PI)), 0.99, 0.99, px); break;
 			}
 		}
 	}

@@ -16,13 +16,15 @@ enum fractalSets {
 	JULIA
 };
 
-#define NUM_FUNCTIONS 4
+#define NUM_FUNCTIONS 6
 
 enum functionTypes {
 	MANDEL_AND_JULIA,
 	SINE,
 	TANGENT,
-	COOL_FUNCTION
+	COOL_FUNCTION1,
+	COOL_FUNCTION2,
+	LINEAR
 };
 //bignum library for big numbers??
  
