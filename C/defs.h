@@ -40,10 +40,6 @@ typedef struct {
 } rgb_t;
 
 typedef struct {
-	double x, y;
-} complex_num;
-
-typedef struct {
 	rgb_t **tex;
 	int **texIter;
 	int gwin;

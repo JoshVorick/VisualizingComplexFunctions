@@ -78,97 +78,24 @@ void calcFractalSet(int width, int height, rgb_t **tex, int **texIter, int scree
 	}
 }
 
-complex_num multiply(complex_num a, complex_num b) {
-  complex_num x = {0,0};
-  x.x = a.x*b.x - a.y*b.y;
-  x.y = a.x*b.y + a.y*b.x;
-  return x;
-}
-
-complex_num divide(complex_num a, complex_num b) {
-  complex_num conjugate = {b.x, -1*b.y};
-  conjugate.x = b.x;
-  conjugate.y = -1 * b.y;
-  a = multiply(a, conjugate);
-  b = multiply(b, conjugate);
-  complex_num answer = {a.x / b.x, a.y / b.x};
-  return answer;
-}
-
-complex_num square(complex_num a) {
-  complex_num x = {0.0, 0.0};
-  x.x = a.x*a.x - a.y*a.y;
-  x.y = 2*a.x*a.y;
-  return x;
-}
-
-complex_num sine(complex_num a) {
-  complex_num x = {0,0};
-  x.x = sin(a.x) * cosh(a.y);
-  x.y = cos(a.x) * sinh(a.y);
-  return x;
-}
-
-complex_num cosine(complex_num a) {
-  complex_num x = {0,0};
-  x.x = cos(a.x) * cosh(a.y);
-  x.y = -1 * sin(a.x) * sinh(a.y);
-  return x;
-}
-
-complex_num tangent(complex_num a) {
-  complex_num x = divide(sine(a), cosine(a));
-  return x;
-}
-
-complex_num exponential(complex_num a) {
-  complex_num x = {0,0};
-  x.x = exp(a.x) * cos(a.y);
-  x.y = exp(a.x) * sin(a.y);
-  return x;
-}
-
-complex_num cool_function(complex_num a, complex_num b) {
+double complex cool_function(double complex a, double complex b) {
   //f(a,b) = a^2 + e^(a + b + sin(b) - tan(a))
-  complex_num x = {0.0, 0.0};
-  complex_num x1 = {0.0, 0.0};
-  x = sine(b);
-  x1 = tangent(a);
-  x.x = a.x + b.x + x.x - x1.x;
-  x.y = a.y + b.y + x.y - x1.y;
-  x = exponential(x);
-  x1 = square(a);
-  x.x = x.x + x1.x;
-  x.y = x.y + x1.y;
-  return x;
+  return a*a + cexp(a + b + csin(b) - ctan(a));
 }
 
-void calc_sine(complex_num a, rgb_t *p) {
-  complex_num x = sine(a);
-  //double value = (a.x*a.x + a.y*a.y);
-  hsv_to_rgb((atan2(x.y, x.x) + PI) / (2*PI), 0.99, 0.99, p);
-}
-
-void calc_tangent(complex_num a, rgb_t *p) {
-  complex_num x = tangent(a);
-  //double value = (a.x*a.x + a.y*a.y);
-  hsv_to_rgb((atan2(x.y, x.x) + PI) / (2*PI), 0.99, 0.99, p);
-}
-
-void calc_cool_function(complex_num a, rgb_t *p) {
-  complex_num x = a;
+double complex coolFunction1(double complex a, int iter) {
+  double complex x = a;
   int i;
-  for (i=0; i<9; i++) {
+  for (i=0; i<iter; i++) {
     x = cool_function(x, a);
   }
-  //double value = (x.x*x.x + x.y*x.y);
-  hsv_to_rgb(atan2(x.y, x.x)/(2*PI), 0.99, 0.99, p);
+	return x;
 }
 
 void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, int functionType) {
  	int i, j, bottom, top, centerX, centerY;
 	rgb_t *px;
-  complex_num x = {0.0, 0.0};
+	double complex a;
 	switch (screenFlags) {
 		case WHOLE_SCREEN: 
 			bottom = 0; 
@@ -188,16 +115,18 @@ void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, in
 	
 	for (i = bottom; i < top; i++) {
 		px = tex[i];
-		x.y = (i - centerY) * mVar->zoomM + mVar->cy;
 		for (j = 0; j	< width; j++, px++) {
-			x.x = (j - centerX) * mVar->zoomM + mVar->cx;
+			a =  ((j - centerX) * mVar->zoomM + mVar->cx) + ((i - centerY) * mVar->zoomM + mVar->cy) * I;
       px->r = 0;
       px->g = 0;
       px->b = 0;
 			switch (functionType) {	
-				case SINE: calc_sine(x, px); break;
-				case TANGENT: calc_tangent(x, px); break;
-				case COOL_FUNCTION: calc_cool_function(x, px); break;
+				case SINE: 
+					hsv_to_rgb((PI + carg(csin(a)))/(2*PI), 0.99, 0.99, px); break;
+				case TANGENT: 
+					hsv_to_rgb((PI + carg(ctan(a)))/(2*PI), 0.99, 0.99, px); break;
+				case COOL_FUNCTION: 
+					hsv_to_rgb((PI + carg(coolFunction1(a, 10))/(2*PI)), 0.99, 0.99, px); break;
 			}
 		}
 	}
