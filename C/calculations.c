@@ -87,9 +87,9 @@ double complex coolFunction1(double complex a, int iter) {
   double complex x = a;
   int i;
   for (i=0; i<iter; i++) {
-    x = cool_function(x, a);
+    a = a*a + cexp(a + x + csin(x) - ctan(a));
   }
-	return x;
+	return a;
 }
 
 void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, int functionType, int colorScheme) {
@@ -129,19 +129,21 @@ void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, in
 					a = coolFunction1(a, 10); break;
 				case COOL_FUNCTION2: 
 					a = coolFunction1(a, 5); break;
+				case COOL_WIKI_FUNCTION:
+					a = (a*a - 1)*(a - 2 - 1*I)*(a - 2 - 1*I) / (a*a + 2 + 2*I); break;
 				case LINEAR: 
 					a = 3*a + 1; break;
 			}
 			double mag = cabs(a);
 			switch(colorScheme) {
 				case 0:
-					hsv_to_rgb((PI + carg(a))/(2*PI), .99, (PI + sin(2*PI*mag)) / (2*PI), px); break;
+					hsv_to_rgb((PI + carg(a))/(2*PI), .99, (PI + sin(1.5*PI*mag)) / (2*PI), px); break;
 				case 1:
 					hsv_to_rgb((PI + carg(a))/(2*PI), 0.99, 0.99, px); break;
 				case 2:
-					hsv_to_rgb(0, 0.99, (PI + sin(2*PI*mag)) / (2*PI), px); break;
+					hsv_to_rgb(0, 0.99, (PI + sin(1.5*PI*mag)) / (2*PI), px); break;
 				case 3:
-					hsv_to_rgb(0, 0, (PI + sin(2*PI*mag)) / (2*PI), px); break;
+					hsv_to_rgb(0, 0, (PI + sin(1.5*PI*mag)) / (2*PI), px); break;
 				case 4:
 					hsv_to_rgb((PI + carg(a))/(2*PI), 0.99, mag, px); break;
 			}
