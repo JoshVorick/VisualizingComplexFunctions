@@ -5,6 +5,11 @@
 
 #define PI 3.14159265
 
+enum fileTypes {
+	PNG,
+	PPM
+};
+
 enum calculationsFlags {
 	WHOLE_SCREEN,
 	TOP_HALF,

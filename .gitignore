@@ -2,3 +2,5 @@ Mandelbrot
 *.swp
 *.swo
 *.o
+*.png
+*.ppm

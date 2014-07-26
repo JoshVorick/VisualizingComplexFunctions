@@ -4,4 +4,5 @@
 // As a reference. Thanks A. Greensted! You're a cool dude
 
 #include <png.h>
+#include "string.h"
 #include "defs.h"

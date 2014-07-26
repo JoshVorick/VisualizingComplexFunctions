@@ -1,6 +1,6 @@
 #include "saveImage.h"
 
-void saveImage(int width, int height, rgb_t **tex, char *filename) {
+void saveAsPNG(int width, int height, rgb_t **tex, char *filename) {
 	FILE *fp;
 	png_structp png_ptr;
 	png_infop info_ptr;
@@ -71,4 +71,21 @@ void saveImage(int width, int height, rgb_t **tex, char *filename) {
 	if (info_ptr != NULL) png_free_data(png_ptr, info_ptr, PNG_FREE_ALL, -1);
 	if (png_ptr != NULL) png_destroy_write_struct(&png_ptr, (png_infopp)NULL);
 	if (row != NULL) free(row);
+}
+
+void saveAsPPM(int width, int height, rgb_t **tex, char *filename) {
+	int i;
+	FILE *fp = fopen(filename, "wb");
+	fprintf(fp, "P6\n%d %d\n255\n", width, height);
+	for (i = height - 1; i >= 0; i--)
+		fwrite(tex[i], 1, width * 3, fp);
+	fclose(fp);
+}
+
+void saveImage(int w, int h, rgb_t **tex, char *filename, int fileType) {
+	if (fileType == PNG) {
+		saveAsPNG(w, h, tex, strcat(filename, ".png"));
+	} else {
+		saveAsPPM(w, h, tex, strcat(filename, ".ppm"));
+	}
 }
