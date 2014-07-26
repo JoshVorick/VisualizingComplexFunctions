@@ -1,7 +1,7 @@
 VisualizingComplexFunctions
 ===========================
 
-You can view the Mandelbrot Set, Julia Sets, and other complex functions interactively and save the images to an arbitrarily large resolution png file (biggest I've tried was 10,0000 x 10,0000). I'll post some screenshots later.
+You can view the Mandelbrot Set, Julia Sets, and other complex functions interactively and save the images to an arbitrarily large resolution png file (biggest I've tried was 10,000 x 10,000). I'll post some screenshots later.
 
 This program uses OpenGL and libpng, so make sure you have them installed if you want it to work.
 
