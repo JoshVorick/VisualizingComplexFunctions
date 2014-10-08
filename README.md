@@ -23,3 +23,14 @@ To be added:
 ============
 - Draw non-iterative complex functions with multiple, cool color schemes (not just boring rainbows)
 - Do something similar in Go, Mathematica, and Haskell!
+
+Screenshots / sample output:
+============================
+
+| Mandelbrot Set | Julia Set |
+| -------------- | --------- |
+| ![screen3](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/mandelbrot0.png) | ![screen4](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/julia0.png) |
+| ![screen3](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/mandelbrot1.png) | ![screen4](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/julia1.png) |
+| ![screen3](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/mandelbrot2.png) | ![screen4](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/julia2.png) |
+| ![screen3](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/mandelbrot3.png) | ![screen4](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/julia3.png) |
+| ![screen3](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/mandelbrot4.png) | ![screen4](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/julia4.png) |
