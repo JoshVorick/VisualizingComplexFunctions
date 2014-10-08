@@ -22,15 +22,16 @@ Feedback and pull requests are very welcome!
 To be added:
 ============
 - Draw non-iterative complex functions with multiple, cool color schemes (not just boring rainbows)
-- Do something similar in Go, Mathematica, and Haskell!
+- Do something similar in Go, Java, Python, and Haskell!
 
 Screenshots / sample output:
 ============================
 
 | Mandelbrot Set | Julia Set |
 | -------------- | --------- |
-| ![screen3](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/mandelbrot0.png) | ![screen4](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/julia0.png) |
-| ![screen3](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/mandelbrot1.png) | ![screen4](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/julia1.png) |
-| ![screen3](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/mandelbrot2.png) | ![screen4](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/julia2.png) |
-| ![screen3](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/mandelbrot3.png) | ![screen4](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/julia3.png) |
-| ![screen3](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/mandelbrot4.png) | ![screen4](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/julia4.png) |
+| ![screen0](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/mandelbrot0.png) | ![screen00](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/julia0.png) |
+| ![screen1](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/mandelbrot1.png) | ![screen11](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/julia1.png) |
+| ![screen2](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/mandelbrot2.png) | ![screen22](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/julia2.png) |
+| ![screen3](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/mandelbrot3.png) | ![screen33](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/julia3.png) |
+| ![screen4](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/mandelbrot4.png) | ![screen44](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/julia4.png) |
+| ![screenGif](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/MandelbrotFast.gif) | ![screenGif2](https://raw.githubusercontent.com/JoshVorick/VisualizingComplexFunctions/master/C/imgs/JuliaFast.gif) |
