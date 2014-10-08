@@ -59,21 +59,32 @@ void getSmoothedColor(double zx, double zy, double zx2, double zy2, rgb_t *p) {
 	
 	double m = (zy2 - zy) / (zx2 - zx);
 	double a = m*m + 1;
-	double b = 2*m*zy - 2*m*m*zx;
+	double b = +2*m*zy - 2*m*m*zx;
 	double c = -4 + m*m*zx*zx - 2*m*zx*zy + zy*zy;
 
-	x1 = (-1*b + sqrt(b*b - 4*a*c)) / (2*a);
-	x2 = (-1*b - sqrt(b*b - 4*a*c)) / (2*a);
-	
-	y1 = sqrt(4 - x1);
-	y2 = sqrt(4 - x2);
+	x1 = (-b + sqrt(b*b - 4*a*c)) / (2*a);
+	x2 = (-b - sqrt(b*b - 4*a*c)) / (2*a);
+
+	y1 = sqrt(4 - x1*x1);
+	y2 = sqrt(4 - x2*x2);
 
 	//decide which is between z and z2
 	if ((zx2-x1)*(zx2-x1) + (zy2-y1)*(zy2-y1) < (zx2-x2)*(zx2-x2) + (zy2-y2)*(zy2-y2)) {
-		hsv_to_rgb((atan2(y1, x1) + PI) / (2*PI) + 0.3, .99, .99, p);
+		hsv_to_rgb(atan2(y1, x1), .99, .99, p);
 	}else {
-		hsv_to_rgb((atan2(y2, x2) + PI) / (2*PI), .99, .99, p);
+		hsv_to_rgb(atan2(y2, x2), .99, .99, p);
 	}
+	/*double d1, d2, weight, x, y;
+	//arg1 = atan2(zy,zx);
+	//arg2 = atan2(zy2,zx2);
+	d1 = (zx*zx + zy*zy);
+	d2 = (zx2*zx2 + zy2*zy2);
+	weight = (4 - d1) / (d2 - d1);
+	x = weight*zx2 + (1-weight)*zx;
+	y = weight*zy2 + (1-weight)*zy;
+	//arg = weight*arg2 + (1 - weight)*arg1;
+	
+	hsv_to_rgb((PI + atan2(y,x)) / (2*PI), .99, .99, p);*/
 }
 
 void getColor(double zx, double zy, double zx2, double zy2, int iter, int prev_iter, rgb_t *p) {	
@@ -139,10 +150,9 @@ void getColor(double zx, double zy, double zx2, double zy2, int iter, int prev_i
 		}
 		break;
 	case 4: //Crazy hue party
-		if (iter == mVar->max_iter)
-			p->r = p->g = p->b = 0;
-		else
-			hsv_to_rgb(atan2(zy, zx) / PI + mVar->color_rotate / 16.0, .99, (zx2 + zy2) / 4.0, p);
+		p->r = p->g = p->b = 0;
+		getSmoothedColor(zx, zy, zx2, zy2, p);
+		//hsv_to_rgb(atan2(zy, zx) / PI + mVar->color_rotate / 16.0, .99, (zx2 + zy2) / 4.0, p);
 		break;
 	}
 }
@@ -163,7 +173,7 @@ void updateColors() {
 	glBindTexture(GL_TEXTURE_2D, mVar->texture);
 	glTexImage2D(GL_TEXTURE_2D, 0, 3, mVar->tex_w, mVar->tex_h,
 		0, GL_RGB, GL_UNSIGNED_BYTE, mVar->tex[0]);
- 
+
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	render();

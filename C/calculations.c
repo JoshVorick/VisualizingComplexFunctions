@@ -9,7 +9,7 @@ void calcFractalSet(int width, int height, rgb_t **tex, int **texIter, int scree
 	int centerX, centerY; //Pixel coordinates of center (only changes based on width, height, and screenFlags)
 	double middleX, middleY; //real and imaginary parts of the center point (only changes with clicking and zooming)
 	rgb_t *px;
-	double x, y, zx, zy, zx2, zy2, zoom;
+	double x, y, zx, zy, zx2, zy2, prevzx, prevzy, zoom;
 	switch (screenFlags) {
 		case WHOLE_SCREEN: 
 			bottom = 0; 
@@ -54,6 +54,8 @@ void calcFractalSet(int width, int height, rgb_t **tex, int **texIter, int scree
 			zx2 = zx*zx;
 			zy2 = zy*zy;
 			for (; iter < mVar->max_iter && zx2 + zy2 < 4; iter++) {
+				prevzx = zx;
+				prevzy = zy;
 				zy = G*(6*zx2*zx2*zx*zy - 20*zx2*zx*zy2*zy + 6*zx*zy2*zy2*zy) + F*(5*zx2*zx2*zy - 10*zx2*zy2*zy + zy2*zy2*zy) + E*(4*zx2*zx*zy - 4*zx*zy2*zy) + D*(3*zx2*zy - zy2*zy) + C*(2 * zx * zy) + B*zy;
 				zx = G*(zx2*zx2*zx2 - 15*zx2*zx2*zy2 + 15*zx2*zy2*zy2 - zy2*zy2*zy2) + F*(zx2*zx2*zx - 10*zx2*zx*zy2 + 5*zx*zy2*zy2) + E*(zx2*zx2 - 6*zx2*zy2 + zy2*zy2) + D*(zx*zx2 - 3*zx*zy2) + C*(zx2 - zy2) + B*zx;
 				switch (fractalType) {
@@ -72,7 +74,7 @@ void calcFractalSet(int width, int height, rgb_t **tex, int **texIter, int scree
 				if (mVar->color_scheme == 3 && iter == prev_iter && i > 0)
 						iter = texIter[i-1][j];
 			}
-			getColor(zx, zy, zx2, zy2, iter, prev_iter, px);
+			getColor(prevzx, prevzy, zx, zy, iter, prev_iter, px);
 			prev_iter = iter;
 		}
 	}
@@ -141,9 +143,9 @@ void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, in
 				case 1:
 					hsv_to_rgb((PI + carg(a))/(2*PI), 0.99, 0.99, px); break;
 				case 2:
-					hsv_to_rgb(0, 0.99, (PI + sin(1.5*PI*mag)) / (2*PI), px); break;
+					hsv_to_rgb(0, 0, (PI + sin(carg(a)))/(2*PI), px); break;
 				case 3:
-					hsv_to_rgb(0, 0, (PI + sin(1.5*PI*mag)) / (2*PI), px); break;
+					hsv_to_rgb(0, 0.99, (PI + sin(1.5*PI*mag)) / (2*PI), px); break;
 				case 4:
 					hsv_to_rgb((PI + carg(a))/(2*PI), 0.99, mag, px); break;
 			}

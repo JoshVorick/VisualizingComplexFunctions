@@ -5,7 +5,7 @@ extern void alloc_tex();
 extern void set_texture();
 extern void resize(int w, int h);
 extern void calcFractalSet(int w, int h, rgb_t **tex, int **texIter, int screenFlags, int fractalType);
-extern void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, int functionType);
+extern void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, int functionType, int colorScheme);
 extern void getColor(double zx, double zy, double zx2, double zy2, int iter, int prev_iter, rgb_t *p);
 extern void updateColors();
 extern void saveImage(int width, int height, rgb_t **tex, char *filename, int fileTpye);
@@ -34,14 +34,14 @@ void saveAs(int fileType) {
 		case MANDEL_AND_JULIA:
 			calcFractalSet(mVar->png_w, mVar->png_h, tex, texIter, WHOLE_SCREEN, MANDELBROT);
 			sprintf(filename, "mandelbrot%i", mVar->imgCount);
-			saveImage(mVar->png_w-1, mVar->png_h-1, tex, filename, fileType);
+			saveImage(mVar->png_w, mVar->png_h, tex, filename, fileType);
 			calcFractalSet(mVar->png_w, mVar->png_h, tex, texIter, WHOLE_SCREEN, JULIA);
 			sprintf(filename, "julia%i", mVar->imgCount);
 			saveImage(mVar->png_w, mVar->png_h, tex, filename, fileType);
 			mVar->imgCount++;
 			break;
 		default:
-			calcComplexFunction(mVar->png_w, mVar->png_h, tex, WHOLE_SCREEN, mVar->function);
+			calcComplexFunction(mVar->png_w, mVar->png_h, tex, WHOLE_SCREEN, mVar->function, mVar->color_scheme);
 			sprintf(filename, "complexfunction%i", mVar->imgCount);
 			saveImage(mVar->png_w, mVar->png_h, tex, filename, fileType);
 			mVar->imgCount++;
@@ -52,7 +52,7 @@ void saveAs(int fileType) {
 	}
 	free(tex);
 	free(texIter);	
-	printf("Image Saved\n");
+	printf("Image Saved as %s\n", filename);
 }
 
 void keypress(unsigned char key, int x, int y) {
@@ -156,7 +156,7 @@ void init(int c, char **v) {
 	mVar->z1y = 0;
 	mVar->function = MANDEL_AND_JULIA;
 	mVar->color_rotate = 0;
-	mVar->color_scheme = 0;
+	mVar->color_scheme = 4;
 	mVar->max_iter = 128;
 	
 	mVar->png_w = 1920;
