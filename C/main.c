@@ -46,12 +46,13 @@ void saveAs(int fileType) {
 			saveImage(mVar->png_w, mVar->png_h, tex, filename, fileType);
 			mVar->imgCount++;
 	}
+
 	for(i=0; i < mVar->png_h; i++) {
 		free(tex[i]);
 		free(texIter[i]);
 	}
 	free(tex);
-	free(texIter);	
+	free(texIter);
 	printf("Image Saved as %s\n", filename);
 }
 
@@ -156,7 +157,7 @@ void init(int c, char **v) {
 	mVar->z1y = 0;
 	mVar->function = MANDEL_AND_JULIA;
 	mVar->color_rotate = 0;
-	mVar->color_scheme = 4;
+	mVar->color_scheme = 0;
 	mVar->max_iter = 128;
 	
 	mVar->png_w = 1920;

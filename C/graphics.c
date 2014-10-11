@@ -37,11 +37,13 @@ void alloc_tex()
 		mVar->tex = (rgb_t**)realloc(mVar->tex, mVar->tex_h * mVar->tex_w * 3 + mVar->tex_h * sizeof(rgb_t*));
 		mVar->texIter = (int**)realloc(mVar->texIter, mVar->tex_h * mVar->tex_w * 3 + mVar->tex_h * sizeof(int*));
  	}
-
-	for (mVar->tex[0] = (rgb_t *)(mVar->tex + mVar->tex_h), i = 1; i < mVar->tex_h; i++)
+	
+	mVar->tex[0] = (rgb_t *)(mVar->tex + mVar->tex_h);
+	for (i = 1; i < mVar->tex_h; i++)
 		mVar->tex[i] = mVar->tex[i - 1] + mVar->tex_w;
 
-	for (mVar->texIter[0] = (int *)(mVar->texIter + mVar->tex_h), i = 1; i < mVar->tex_h; i++)
+	mVar->texIter[0] = (int *)(mVar->texIter + mVar->tex_h);
+	for (i = 1; i < mVar->tex_h; i++)
 		mVar->texIter[i] = mVar->texIter[i - 1] + mVar->tex_w;
 }
 
@@ -75,6 +77,7 @@ void resize(int w, int h)
 	mVar->height = h;
  
 	glViewport(0, 0, w, h);
+	glLoadIdentity();
 	glOrtho(0, w, 0, h, -1, 1);
 	
 	set_texture();
