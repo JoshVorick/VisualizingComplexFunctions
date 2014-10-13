@@ -53,6 +53,7 @@ typedef struct {
 	int gwin;
 	GLuint texture;
 	int width, height;
+	int oldHeight;
 	int tex_w, tex_h;
 	int png_w, png_h;
 	int imgCount;
