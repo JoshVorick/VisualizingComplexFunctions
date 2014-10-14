@@ -42,17 +42,20 @@ void saveAs(int fileType) {
 			calcFractalSet(mVar->png_w, mVar->png_h, tex, texIter, WHOLE_SCREEN, MANDELBROT);
 			sprintf(filename, "mandelbrot%i", mVar->imgCount);
 			saveImage(mVar->png_w, mVar->png_h, tex, filename, fileType);
+			printf("Image Saved as %s\n", filename);
 			calcFractalSet(mVar->png_w, mVar->png_h, tex, texIter, WHOLE_SCREEN, JULIA);
 			sprintf(filename, "julia%i", mVar->imgCount);
 			saveImage(mVar->png_w, mVar->png_h, tex, filename, fileType);
 			mVar->zoomM = tempZoomM;
 			mVar->zoomJ = tempZoomJ;
+			printf("Image Saved as %s\n", filename);
 			mVar->imgCount++;
 			break;
 		default:
 			calcComplexFunction(mVar->png_w, mVar->png_h, tex, WHOLE_SCREEN, mVar->function, mVar->color_scheme);
 			sprintf(filename, "complexfunction%i", mVar->imgCount);
 			saveImage(mVar->png_w, mVar->png_h, tex, filename, fileType);
+			printf("Image Saved as %s\n", filename);
 			mVar->imgCount++;
 	}
 
@@ -62,7 +65,6 @@ void saveAs(int fileType) {
 	}
 	free(tex);
 	free(texIter);
-	printf("Image Saved as %s\n", filename);
 }
 
 void keypress(unsigned char key, int x, int y) {
@@ -72,6 +74,7 @@ void keypress(unsigned char key, int x, int y) {
 		for(i=0; i<mVar->height; i++)
 			free(mVar->texIter[i]);
 		free(mVar->texIter);
+		free(mVar->tex);
 		glutDestroyWindow(mVar->gwin);
 		return;
 	

@@ -5,8 +5,8 @@ extern void calcComplexFunction(int width, int height, rgb_t **tex, int screenFl
 
 void render()
 {
-	double	x = (double)mVar->width /mVar->tex_w,
-		y = (double)mVar->height/mVar->tex_h;
+	double x = (double)mVar->width /mVar->tex_w;
+	double y = (double)mVar->height/mVar->tex_h;
  
 	glClear(GL_COLOR_BUFFER_BIT);
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
@@ -32,50 +32,28 @@ void alloc_tex()
 
 	for (mVar->tex_w = 1; mVar->tex_w < mVar->width;	mVar->tex_w <<= 1);
 	for (mVar->tex_h = 1; mVar->tex_h < mVar->height; mVar->tex_h <<= 1);
- 
-#if 0
-	if (mVar->tex_h != oh || mVar->tex_w != ow) {
-		mVar->tex = (rgb_t**)realloc(mVar->tex, mVar->tex_h * mVar->tex_w * 3 + mVar->tex_h * sizeof(rgb_t*));
-		mVar->texIter = (int**)realloc(mVar->texIter, mVar->tex_h * mVar->tex_w * 3 + mVar->tex_h * sizeof(int*));
- 	}
 
-	mVar->tex[0] = (rgb_t *)(mVar->tex + mVar->tex_h);
-	for (i = 1; i < mVar->tex_h; i++)
-		mVar->tex[i] = mVar->tex[i - 1] + mVar->tex_w;
-
-	mVar->texIter[0] = (int *)(mVar->texIter + mVar->height);
-	for (i = 1; i < mVar->tex_h; i++)
-		mVar->texIter[i] = 0;
-#else
-	
 	if (mVar->tex_h != oh || mVar->tex_w != ow) {
-		/*if (mVar->tex != NULL)
-			for (i = 0; i < oh; i++)
-				free(mVar->tex[i]);
-		if (mVar->texIter != NULL)
-			for (i = 0; i < mVar->oldHeight; i++)
-				free(mVar->tex[i]);
-		mVar->oldHeight = mVar->height;*/
 		free(mVar->tex);
-
 		mVar->tex = (rgb_t**) malloc(mVar->tex_h * sizeof(rgb_t*) + mVar->tex_h * mVar->tex_w * sizeof(rgb_t));
 	}
 	if (mVar->oldWidth != mVar->width || mVar->oldHeight != mVar->height) {
-		/*if (mVar->texIter != NULL)
+		if (mVar->texIter != NULL)
 			for (i = 0; i < mVar->oldHeight; i++)
 				free(mVar->tex[i]);
-		free(mVar->texIter);*/
+		free(mVar->texIter);
 
-		mVar->texIter = (int**) malloc(mVar->height * sizeof(int*));
+		mVar->texIter = (int**) malloc(mVar->tex_h * sizeof(int*));
 
 		mVar->tex[0] = (rgb_t *)(mVar->tex + mVar->tex_h);
 		for (i = 1; i < mVar->tex_h; i++)
 			mVar->tex[i] = mVar->tex[i - 1] + mVar->tex_w;
 
 		for (i = 0; i < mVar->height; i++)
-			mVar->texIter[i] = (int*) malloc(mVar->width * sizeof(int));
+			mVar->texIter[i] = (int *)malloc(mVar->width * sizeof(int));
+		mVar->oldHeight = mVar->height;
+		mVar->oldWidth = mVar->width;
 	}
-#endif
 }
 
 void set_texture() {
