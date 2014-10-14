@@ -38,11 +38,11 @@ enum functionTypes {
 /* A,B,... for coefficients of derivatives of Mandelbrot Set and Julia Sets */
 #define A 1 //c	 
 #define B 0 //z^1 
-#define C 1 //z^2 
+#define C 0 //z^2 
 #define D 0 //z^3 
 #define E 0 //z^4 
 #define F 0 //z^5 
-#define G 0 //z^6 
+#define G 1 //z^6 
  
 typedef struct {
 	unsigned char r, g, b;
@@ -54,7 +54,7 @@ typedef struct {
 	int gwin;
 	GLuint texture;
 	int width, height;
-	int oldHeight;
+	int oldHeight, oldWidth;
 	int tex_w, tex_h;
 	int png_w, png_h;
 	int imgCount;

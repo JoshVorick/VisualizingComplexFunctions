@@ -55,17 +55,24 @@ void alloc_tex()
 		if (mVar->texIter != NULL)
 			for (i = 0; i < mVar->oldHeight; i++)
 				free(mVar->tex[i]);
-		mVar->oldHeight = mVar->height;
+		mVar->oldHeight = mVar->height;*/
 		free(mVar->tex);
+
+		mVar->tex = (rgb_t**) malloc(mVar->tex_h * sizeof(rgb_t*) + mVar->tex_h * mVar->tex_w * sizeof(rgb_t));
+	}
+	if (mVar->oldWidth != mVar->width || mVar->oldHeight != mVar->height) {
+		/*if (mVar->texIter != NULL)
+			for (i = 0; i < mVar->oldHeight; i++)
+				free(mVar->tex[i]);
 		free(mVar->texIter);*/
-		mVar->tex = (rgb_t**) malloc(mVar->tex_h * mVar->tex_w * sizeof(rgb_t*));
+
 		mVar->texIter = (int**) malloc(mVar->height * sizeof(int*));
-	
+
 		mVar->tex[0] = (rgb_t *)(mVar->tex + mVar->tex_h);
 		for (i = 1; i < mVar->tex_h; i++)
 			mVar->tex[i] = mVar->tex[i - 1] + mVar->tex_w;
 
-		for (i=0; i < mVar->height; i++)
+		for (i = 0; i < mVar->height; i++)
 			mVar->texIter[i] = (int*) malloc(mVar->width * sizeof(int));
 	}
 #endif
@@ -97,6 +104,8 @@ void set_texture() {
 void resize(int w, int h)
 {
 	printf("resize %d %d\n", w, h);
+	mVar->oldWidth = mVar->width;
+	mVar->oldHeight = mVar->height;
 	mVar->width = w;
 	mVar->height = h;
  
