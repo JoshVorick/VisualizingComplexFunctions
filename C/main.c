@@ -6,7 +6,7 @@ extern void set_texture();
 extern void resize(int w, int h);
 extern void calcFractalSet(int w, int h, rgb_t **tex, int **texIter, int screenFlags, int fractalType);
 extern void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, int functionType, int colorScheme);
-extern void getColor(double zx, double zy, double zx2, double zy2, int iter, int prev_iter, rgb_t *p);
+//extern void getColor(complex double prevZ, complex double z, int iter, int prev_iter, rgb_t *p);
 extern void updateColors();
 extern void saveImage(int width, int height, rgb_t **tex, char *filename, int fileTpye);
 
@@ -103,8 +103,6 @@ void keypress(unsigned char key, int x, int y) {
 
 	case 'w':
 		mVar->function = (mVar->function + 1) % NUM_FUNCTIONS;
-		mVar->cx = mVar->cy = 0;
-		mVar->zoomM = 1./128;
 		break;
 
 	case '>': case '.':
@@ -137,19 +135,16 @@ void mouseclick(int button, int state, int x, int y) {
 
 	if (mVar->function == MANDEL_AND_JULIA) {
 		if(y < mVar->height/2){ //Mandelbrot is clicked
-			mVar->cx += (x - mVar->width/2.) * mVar->zoomM;
-			mVar->cy -= (y - mVar->height/4.) * mVar->zoomM;
-			printf("c = %f + %fi\n", mVar->cx, mVar->cy);
+			mVar->c += (x - mVar->width/2.) * mVar->zoomM - I*(y - mVar->height/4.) * mVar->zoomM;
+			printf("c = %f + %fi\n", creal(mVar->c), cimag(mVar->c));
 		}
 		else{ // Julia Set was clicked
-			mVar->z1x += (x - mVar->width/2.) * mVar->zoomJ;
-			mVar->z1y -= (y - 3*mVar->height/4.) * mVar->zoomJ;
-			printf("z1 = %f + %fi\n", mVar->z1x, mVar->z1y);
+			mVar->z1 += (x - mVar->width/2.) * mVar->zoomJ - I*(y - 3*mVar->height/4.) * mVar->zoomJ;
+			printf("z1 = %f + %fi\n", creal(mVar->z1), cimag(mVar->z1));
 		}
 	} else {
-		mVar->cx += (x - mVar->width/2.) * mVar->zoomM;
-		mVar->cy -= (y - mVar->height/2.) * mVar->zoomM;
-		printf("c = %f + %fi\n", mVar->cx, mVar->cy);
+		mVar->centerC += (x - mVar->width/2.) * mVar->zoomM - I*(y - mVar->height/2.) * mVar->zoomM;
+		printf("c = %f + %fi\n", creal(mVar->centerC), cimag(mVar->centerC));
 	}
 
 	set_texture();
@@ -160,10 +155,9 @@ void init(int c, char **v) {
 	mVar->zoomM = 1./128;
 	mVar->zoomJ = 1./128;
 	mVar->zoomF = 1./128;
-	mVar->cx = 0;
-	mVar->cy = 0;
-	mVar->z1x = 0;
-	mVar->z1y = 0;
+	mVar->c = 0 + 0*I;
+	mVar->z1 = 0 + 0*I;
+	mVar->centerC = 0 + 0*I;
 	mVar->function = MANDEL_AND_JULIA;
 	mVar->color_rotate = 0;
 	mVar->color_scheme = 0;

@@ -1,15 +1,16 @@
 #include "calculations.h"
 
-extern void getColor(double zx,double zy, double zx2, double zy2, int iter, int prev_iter, rgb_t *p);
+extern void getColor(complex double prevZ, complex double z, int iter, int prev_iter, rgb_t *p);
 extern void hsv_to_rgb(double hue, double sat, double var, rgb_t *pixel);
 
 void calcFractalSet(int width, int height, rgb_t **tex, int **texIter, int screenFlags, int fractalType) {
 	int i, j, iter, prev_iter, bottom, top;
 	//I need to think of less confusing names than 'center' and 'middle'
 	int centerX, centerY; //Pixel coordinates of center (only changes based on width, height, and screenFlags)
-	double middleX, middleY; //real and imaginary parts of the center point (only changes with clicking and zooming)
+	double complex middle; //real and imaginary parts of the center point (only changes with clicking and zooming)
 	rgb_t *px;
-	double x, y, zx, zy, zx2, zy2, prevzx, prevzy, zoom;
+	double x, y, zoom;
+	double complex curPoint, z, z2, prevZ;
 	switch (screenFlags) {
 		case WHOLE_SCREEN: 
 			bottom = 0; 
@@ -29,53 +30,49 @@ void calcFractalSet(int width, int height, rgb_t **tex, int **texIter, int scree
 	switch (fractalType) {
 		case MANDELBROT:
 			zoom = mVar->zoomM;
-			middleX = mVar->cx;
-			middleY = mVar->cy; break;
+			middle = mVar->c;
+			break;
 		case JULIA:
 			zoom = mVar->zoomJ;
-			middleX = mVar->z1x;
-			middleY = mVar->z1y; break;
+			middle = mVar->z1;
+			break;
 	}	
 	for (i = bottom; i < top; i++) {
 		px = tex[i];
-		y = (i - centerY) * zoom + middleY;
+		y = (i - centerY) * zoom + cimag(middle);
 		for (j = 0; j	< width; j++, px++) {
-			x = (j - centerX) * zoom + middleX;
+			x = (j - centerX) * zoom + creal(middle);
+			curPoint = x + y*I;
 			iter = 0;
 			
 			switch(fractalType) {
 				case MANDELBROT:
-					zx = mVar->z1x;
-					zy = mVar->z1y; break;
+					z = mVar->z1;
+					break;
 				case JULIA:
-					zx = x;
-					zy = y; break;
+					z = curPoint;
+					break;
 			}
-			zx2 = zx*zx;
-			zy2 = zy*zy;
-			for (; iter < mVar->max_iter && zx2 + zy2 < 4; iter++) {
-				prevzx = zx;
-				prevzy = zy;
-				zy = G*(6*zx2*zx2*zx*zy - 20*zx2*zx*zy2*zy + 6*zx*zy2*zy2*zy) + F*(5*zx2*zx2*zy - 10*zx2*zy2*zy + zy2*zy2*zy) + E*(4*zx2*zx*zy - 4*zx*zy2*zy) + D*(3*zx2*zy - zy2*zy) + C*(2 * zx * zy) + B*zy;
-				zx = G*(zx2*zx2*zx2 - 15*zx2*zx2*zy2 + 15*zx2*zy2*zy2 - zy2*zy2*zy2) + F*(zx2*zx2*zx - 10*zx2*zx*zy2 + 5*zx*zy2*zy2) + E*(zx2*zx2 - 6*zx2*zy2 + zy2*zy2) + D*(zx*zx2 - 3*zx*zy2) + C*(zx2 - zy2) + B*zx;
+			z2 = z * z;
+			for (; iter < mVar->max_iter && cabs(z2) < 4; iter++) {
+				prevZ = z;
+				z = G*z2*z2*z2 + F*z2*z2*z + E*z2*z2 + D*z2*z + C*z2 + B*z;
 				switch (fractalType) {
 					case MANDELBROT:
-						zx += A*x;
-						zy += A*y; break;
+						z += A*curPoint;
+						break;
 					case JULIA:
-						zx += mVar->cx;
-						zy += mVar->cy; break;
+						z += A*mVar->c;
+						break;
 				}
-				zx2 = zx * zx;
-				zy2 = zy * zy;
+				z2 = z * z;
 			}
 			if (texIter != NULL) {
 				texIter[i][j] = *(unsigned short *)px = iter;
 				if (mVar->color_scheme == 3 && iter == prev_iter && i > 0)
 						iter = texIter[i-1][j];
 			}
-			getColor(prevzx, prevzy, zx, zy, iter, prev_iter, px);
-			//getColor(zx, zy, zx2, zy2, iter, prev_iter, px);
+			getColor(prevZ, z, iter, prev_iter, px);
 			prev_iter = iter;
 		}
 	}
@@ -119,7 +116,7 @@ void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, in
 	for (i = bottom; i < top; i++) {
 		px = tex[i];
 		for (j = 0; j	< width; j++, px++) {
-			a =  ((j - centerX) * mVar->zoomM + mVar->cx) + ((i - centerY) * mVar->zoomM + mVar->cy) * I;
+			a =  ((j - centerX) * mVar->zoomM + creal(mVar->centerC)) + ((i - centerY) * mVar->zoomM + cimag(mVar->centerC)) * I;
       px->r = 0;
       px->g = 0;
       px->b = 0;

@@ -52,11 +52,16 @@ void hsv_to_rgb(double hue, double sat, double var, rgb_t *pixel)
 	}
 }
 
-void getSmoothedColor(double zx, double zy, double zx2, double zy2, int iter, rgb_t *p) {
+void getSmoothedColor(complex double prevZ, complex double z, int iter, rgb_t *p) {
 #if 1
 	//Solve for point between (zx, zy) and (zx2, zy2) that lies on circle of radius 2
-	double x1, x2; //Two solutions to intersection of line between points and circle
+	double x1, x2; // Two solutions to intersection of line between points and circle
 	double y1, y2; 
+
+	double zx = creal(prevZ);
+	double zy = cimag(prevZ);
+	double zx2 = creal(z);
+	double zy2 = cimag(z);
 	
 	double m = (zy2 - zy) / (zx2 - zx);
 	double a = m*m + 1;
@@ -106,7 +111,7 @@ void getSmoothedColor(double zx, double zy, double zx2, double zy2, int iter, rg
 #endif
 }
 
-void getColor(double zx, double zy, double zx2, double zy2, int iter, int prev_iter, rgb_t *p) {	
+void getColor(complex double prevZ, complex double z, int iter, int prev_iter, rgb_t *p) {
 	switch(mVar->color_scheme) {
 	case 0: //Blue and yellow colors (like wikipedia's mandelbrot)
 		if(iter >= mVar->max_iter) {
@@ -170,7 +175,7 @@ void getColor(double zx, double zy, double zx2, double zy2, int iter, int prev_i
 		break;
 	case 4: //Crazy hue party
 		p->r = p->g = p->b = 0;
-		getSmoothedColor(zx, zy, zx2, zy2, iter, p);
+		getSmoothedColor(prevZ, z, iter, p);
 		//hsv_to_rgb(atan2(zy, zx) / PI + mVar->color_rotate / 16.0, .99, (zx2 + zy2) / 4.0, p);
 		break;
 	}
@@ -185,7 +190,7 @@ void updateColors() {
 	rgb_t *px;
 	for(i = 0; i < mVar->height; i++){
 		for (j = 0, px = mVar->tex[i]; j	< mVar->width; j++, px++){
-			getColor(0, 0, 0, 0, mVar->texIter[i][j], 0, px);
+			getColor(0, 0, mVar->texIter[i][j], 0, px);
 		}
 	}
 	glEnable(GL_TEXTURE_2D);

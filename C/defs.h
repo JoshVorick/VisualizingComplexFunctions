@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <complex.h>
 #include <GL/freeglut.h>
 
 #define PI 3.14159265
@@ -58,8 +59,9 @@ typedef struct {
 	int png_w, png_h;
 	int imgCount;
 	double zoomM, zoomJ, zoomF; //Scale for Mandelbrot Set, Julia Sets, and the other complex function(s)
-	double cx, cy; //Initial value for c in f(x) = z^2 + c 
-	double z1x, z1y; //Initial value of z
+	double complex c; //Initial value for c in f(x) = z^2 + c 
+	double complex z1; //Initial value of z
+	double complex centerC; // Center point of complex functions
 	int function;
 	int color_rotate;
 	int color_scheme;
