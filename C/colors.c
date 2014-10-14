@@ -52,7 +52,8 @@ void hsv_to_rgb(double hue, double sat, double var, rgb_t *pixel)
 	}
 }
 
-void getSmoothedColor(double zx, double zy, double zx2, double zy2, rgb_t *p) {
+void getSmoothedColor(double zx, double zy, double zx2, double zy2, int iter, rgb_t *p) {
+#if 1
 	//Solve for point between (zx, zy) and (zx2, zy2) that lies on circle of radius 2
 	double x1, x2; //Two solutions to intersection of line between points and circle
 	double y1, y2; 
@@ -70,11 +71,28 @@ void getSmoothedColor(double zx, double zy, double zx2, double zy2, rgb_t *p) {
 
 	//decide which is between z and z2
 	if ((zx2-x1)*(zx2-x1) + (zy2-y1)*(zy2-y1) < (zx2-x2)*(zx2-x2) + (zy2-y2)*(zy2-y2)) {
-		hsv_to_rgb(atan2(y1, x1), .99, .99, p);
+		/*
+		double distZ = sqrt((zx - zx2)*(zx - zx2) + (zy - zy2)*(zy - zy2));
+		double distX = sqrt((x1 - zx2)*(x1 - zx2) + (y1 - zy2)*(y1 - zy2));
+		if (distX > distZ)
+			printf("Error, distX is greater than distZ. distX: %.3f, distZ: %.3f, iter: %i\n", distX, distZ, iter);
+		hsv_to_rgb((distZ - distX) / distZ + 1, .99, .99, p);
+		*/
+		//hsv_to_rgb(atan2(x1, y1), .99, .99, p);
+		hsv_to_rgb(sqrt(zx*zx + zy*zy), .99, .99, p);
 	}else {
-		hsv_to_rgb(atan2(y2, x2), .99, .99, p);
+		/*
+		double distZ = sqrt((zx - zx2)*(zx - zx2) + (zy - zy2)*(zy - zy2));
+		double distX = sqrt((x2 - zx2)*(x2 - zx2) + (y2 - zy2)*(y2 - zy2));
+		if (distX > distZ)
+			printf("Error distX: %.3f, distZ: %.3f, iter: %i\n", distX, distZ, iter);
+		hsv_to_rgb((distZ - distX) / distZ + 1, .99, .99, p);
+		*/
+		//hsv_to_rgb(atan2(x2, y2), .99, .99, p);
+		hsv_to_rgb(sqrt(zx*zx + zy*zy), .99, .99, p);
 	}
-	/*double d1, d2, weight, x, y;
+#else
+	double d1, d2, weight, x, y;
 	//arg1 = atan2(zy,zx);
 	//arg2 = atan2(zy2,zx2);
 	d1 = (zx*zx + zy*zy);
@@ -84,7 +102,8 @@ void getSmoothedColor(double zx, double zy, double zx2, double zy2, rgb_t *p) {
 	y = weight*zy2 + (1-weight)*zy;
 	//arg = weight*arg2 + (1 - weight)*arg1;
 	
-	hsv_to_rgb((PI + atan2(y,x)) / (2*PI), .99, .99, p);*/
+	hsv_to_rgb((PI + atan2(y,x)) / (2*PI), .99, .99, p);
+#endif
 }
 
 void getColor(double zx, double zy, double zx2, double zy2, int iter, int prev_iter, rgb_t *p) {	
@@ -151,7 +170,7 @@ void getColor(double zx, double zy, double zx2, double zy2, int iter, int prev_i
 		break;
 	case 4: //Crazy hue party
 		p->r = p->g = p->b = 0;
-		getSmoothedColor(zx, zy, zx2, zy2, p);
+		getSmoothedColor(zx, zy, zx2, zy2, iter, p);
 		//hsv_to_rgb(atan2(zy, zx) / PI + mVar->color_rotate / 16.0, .99, (zx2 + zy2) / 4.0, p);
 		break;
 	}

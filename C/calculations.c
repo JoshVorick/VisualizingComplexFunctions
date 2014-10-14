@@ -75,6 +75,7 @@ void calcFractalSet(int width, int height, rgb_t **tex, int **texIter, int scree
 						iter = texIter[i-1][j];
 			}
 			getColor(prevzx, prevzy, zx, zy, iter, prev_iter, px);
+			//getColor(zx, zy, zx2, zy2, iter, prev_iter, px);
 			prev_iter = iter;
 		}
 	}

@@ -32,12 +32,21 @@ void saveAs(int fileType) {
 
 	switch (mVar->function) {
 		case MANDEL_AND_JULIA:
+			i = 0; // This statement does nothing but prevents a silly error
+			// Adjust zoom so that the saved image will be approximately the
+			// same as the displayed image, but of the corrext resolution.
+			double tempZoomM = mVar->zoomM;
+			double tempZoomJ = mVar->zoomJ;
+			mVar->zoomM *= mVar->width / (double)mVar->png_w;
+			mVar->zoomJ *= mVar->width / (double)mVar->png_w;
 			calcFractalSet(mVar->png_w, mVar->png_h, tex, texIter, WHOLE_SCREEN, MANDELBROT);
 			sprintf(filename, "mandelbrot%i", mVar->imgCount);
 			saveImage(mVar->png_w, mVar->png_h, tex, filename, fileType);
 			calcFractalSet(mVar->png_w, mVar->png_h, tex, texIter, WHOLE_SCREEN, JULIA);
 			sprintf(filename, "julia%i", mVar->imgCount);
 			saveImage(mVar->png_w, mVar->png_h, tex, filename, fileType);
+			mVar->zoomM = tempZoomM;
+			mVar->zoomJ = tempZoomJ;
 			mVar->imgCount++;
 			break;
 		default:
@@ -172,7 +181,7 @@ void init(int c, char **v) {
 	
 	glutInit(&c, v);
 	glutInitDisplayMode(GLUT_RGB);
-	glutInitWindowSize(956, 1041);
+	glutInitWindowSize(100, 1041);
 	glutDisplayFunc(render);
  
 	mVar->gwin = glutCreateWindow("Mandelbrot");
