@@ -1,14 +1,13 @@
 #include "graphics.h"
 
-extern void calcFractalSet(int w, int h, rgb_t **tex, int **texIter, int screenFlags, int fractalType);
-extern void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, int functionType, int colorScheme);
+extern void calcComplexFunction(int width, int height, rgb_t **tex, int **texIter, int screenFlags, int functionType);
 
 void render()
 {
 	double x = (double)mVar->width /mVar->tex_w;
 	double y = (double)mVar->height/mVar->tex_h;
  
-	glClear(GL_COLOR_BUFFER_BIT);
+	//glClear(GL_COLOR_BUFFER_BIT);
 	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
  
 	glBindTexture(GL_TEXTURE_2D, mVar->texture);
@@ -38,19 +37,16 @@ void alloc_tex()
 		mVar->tex = (rgb_t**) malloc(mVar->tex_h * sizeof(rgb_t*) + mVar->tex_h * mVar->tex_w * sizeof(rgb_t));
 	}
 	if (mVar->oldWidth != mVar->width || mVar->oldHeight != mVar->height) {
-		if (mVar->texIter != NULL)
-			for (i = 0; i < mVar->oldHeight; i++)
-				free(mVar->tex[i]);
 		free(mVar->texIter);
-
-		mVar->texIter = (int**) malloc(mVar->tex_h * sizeof(int*));
+		mVar->texIter = (int**) malloc(mVar->tex_h * sizeof(int*) + mVar->height * mVar->width * sizeof(int));
 
 		mVar->tex[0] = (rgb_t *)(mVar->tex + mVar->tex_h);
 		for (i = 1; i < mVar->tex_h; i++)
 			mVar->tex[i] = mVar->tex[i - 1] + mVar->tex_w;
 
-		for (i = 0; i < mVar->height; i++)
-			mVar->texIter[i] = (int *)malloc(mVar->width * sizeof(int));
+		mVar->texIter[0] = (int *)(mVar->texIter + mVar->height);
+		for (i = 1; i < mVar->height; i++)
+			mVar->texIter[i] = mVar->texIter[i - 1] + mVar->width;
 		mVar->oldHeight = mVar->height;
 		mVar->oldWidth = mVar->width;
 	}
@@ -61,11 +57,11 @@ void set_texture() {
 	alloc_tex();
 	switch (mVar->function) {
 		case MANDEL_AND_JULIA:
-			calcFractalSet(mVar->width, mVar->height, mVar->tex, mVar->texIter, TOP_HALF, MANDELBROT);
-			calcFractalSet(mVar->width, mVar->height, mVar->tex, mVar->texIter, BOTTOM_HALF, JULIA);
+			calcComplexFunction(mVar->width, mVar->height, mVar->tex, mVar->texIter, TOP_HALF, MANDELBROT);
+			calcComplexFunction(mVar->width, mVar->height, mVar->tex, mVar->texIter, BOTTOM_HALF, JULIA);
 			break;
 		default:
-			calcComplexFunction(mVar->width, mVar->height, mVar->tex, WHOLE_SCREEN, mVar->function, mVar->color_scheme);
+			calcComplexFunction(mVar->width, mVar->height, mVar->tex, mVar->texIter, WHOLE_SCREEN, mVar->function);
 	}
 
 	glEnable(GL_TEXTURE_2D);

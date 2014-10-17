@@ -4,8 +4,7 @@ extern void render();
 extern void alloc_tex();
 extern void set_texture();
 extern void resize(int w, int h);
-extern void calcFractalSet(int w, int h, rgb_t **tex, int **texIter, int screenFlags, int fractalType);
-extern void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, int functionType, int colorScheme);
+extern void calcComplexFunction(int width, int height, rgb_t **tex, int** texIter, int screenFlags, int functionType);
 //extern void getColor(complex double prevZ, complex double z, int iter, int prev_iter, rgb_t *p);
 extern void updateColors();
 extern void saveImage(int width, int height, rgb_t **tex, char *filename, int fileTpye);
@@ -39,11 +38,11 @@ void saveAs(int fileType) {
 			double tempZoomJ = mVar->zoomJ;
 			mVar->zoomM *= mVar->width / (double)mVar->png_w;
 			mVar->zoomJ *= mVar->width / (double)mVar->png_w;
-			calcFractalSet(mVar->png_w, mVar->png_h, tex, texIter, WHOLE_SCREEN, MANDELBROT);
+			calcComplexFunction(mVar->png_w, mVar->png_h, tex, texIter, WHOLE_SCREEN, MANDELBROT);
 			sprintf(filename, "mandelbrot%i", mVar->imgCount);
 			saveImage(mVar->png_w, mVar->png_h, tex, filename, fileType);
 			printf("Image Saved as %s\n", filename);
-			calcFractalSet(mVar->png_w, mVar->png_h, tex, texIter, WHOLE_SCREEN, JULIA);
+			calcComplexFunction(mVar->png_w, mVar->png_h, tex, texIter, WHOLE_SCREEN, JULIA);
 			sprintf(filename, "julia%i", mVar->imgCount);
 			saveImage(mVar->png_w, mVar->png_h, tex, filename, fileType);
 			mVar->zoomM = tempZoomM;
@@ -52,7 +51,7 @@ void saveAs(int fileType) {
 			mVar->imgCount++;
 			break;
 		default:
-			calcComplexFunction(mVar->png_w, mVar->png_h, tex, WHOLE_SCREEN, mVar->function, mVar->color_scheme);
+			calcComplexFunction(mVar->png_w, mVar->png_h, tex, texIter, WHOLE_SCREEN, mVar->function);
 			sprintf(filename, "complexfunction%i", mVar->imgCount);
 			saveImage(mVar->png_w, mVar->png_h, tex, filename, fileType);
 			printf("Image Saved as %s\n", filename);
@@ -68,23 +67,30 @@ void saveAs(int fileType) {
 }
 
 void keypress(unsigned char key, int x, int y) {
-	int i;
 	switch(key) {
 	case 'q':	glFinish();
-		for(i=0; i<mVar->height; i++)
-			free(mVar->texIter[i]);
 		free(mVar->texIter);
 		free(mVar->tex);
 		glutDestroyWindow(mVar->gwin);
 		return;
-	
-	case 'a': mVar->zoomM /= 2; break;
-	case 's': mVar->zoomM *= 2; break;
-	
+
+	case 'a':
+		if (mVar->function == MANDEL_AND_JULIA)
+			mVar->zoomM /= 2;
+		else
+			mVar->zoomF /= 2;
+		break;
+	case 's':
+		if (mVar->function == MANDEL_AND_JULIA)
+			mVar->zoomM *= 2;
+		else
+			mVar->zoomF *= 2;
+		break;
+
 	case 'z': mVar->zoomJ /= 2; break;
 	case 'x': mVar->zoomJ *= 2; break;
 
-	case 'r':	
+	case 'r':
 		mVar->color_rotate += 1;
 		switch (mVar->color_scheme){
 			case 0: mVar->color_rotate %= 16; break;
@@ -117,11 +123,11 @@ void keypress(unsigned char key, int x, int y) {
  
 	case '<': case ',':
 		mVar->max_iter -= 128;
-		if (mVar->max_iter < 128) 
+		if (mVar->max_iter < 128)
 			mVar->max_iter = 128;
 		printf("max iter: %d\n", mVar->max_iter);
 		break;
-		
+
 	case 'd':
 		saveAs(PNG);
 		return;
@@ -165,20 +171,30 @@ void init(int c, char **v) {
 	mVar->color_rotate = 0;
 	mVar->color_scheme = 0;
 	mVar->max_iter = 128;
-	
+
+	mVar->tex = NULL;
+	mVar->texIter = NULL;
+
+	mVar->oldHeight = 0;
+	mVar->oldWidth = 0;
+	mVar->height = 400;
+	mVar->width = 200;
+	mVar->tex_h = 1;
+	mVar->tex_w = 1;
+
 	mVar->png_w = 1920;
 	mVar->png_h = 1080;
 	mVar->imgCount = 0;
-	
+
 	switch (c) {
 		case 4: mVar->imgCount = atoi(v[3]);
 		case 3: mVar->png_h = atoi(v[2]);
 		case 2:	mVar->png_w = atoi(v[1]);
 	}
-	
+
 	glutInit(&c, v);
 	glutInitDisplayMode(GLUT_RGB);
-	glutInitWindowSize(100, 1041);
+	glutInitWindowSize(mVar->width, mVar->height);
 	glutDisplayFunc(render);
  
 	mVar->gwin = glutCreateWindow("Mandelbrot");
@@ -187,13 +203,11 @@ void init(int c, char **v) {
 	glutMouseFunc(mouseclick);
 	glutReshapeFunc(resize);
 	glGenTextures(1, &mVar->texture);
+
 	set_texture();
 }
 
 int main(int c, char **v) {
-	init(c, v);
-
-	printf("\nImages will be dumped at %i x %i resolution\n\n",mVar->png_w, mVar->png_h);
 	printf("\nEquation:\n\tf(z) = %.2fz^5 + %.2fz^4 + %.2f*z^3 + %.2f*z^2 + %.2f*z^1 + %.2f*c\n",(float)F,(float)E,(float)D,(float)C,(float)B,(float)A);
 
 	printf("keys:\n"
@@ -208,6 +222,9 @@ int main(int c, char **v) {
 		"\tq: quit\n"
 		"\tclick to change intital values of c and z1\n\n");
  
+	init(c, v);
+	printf("\nImages will be dumped at %i x %i resolution\n\n",mVar->png_w, mVar->png_h);
+
 	glutMainLoop();
 	return 0;
 }

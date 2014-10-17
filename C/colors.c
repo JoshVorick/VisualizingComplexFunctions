@@ -83,8 +83,8 @@ void getSmoothedColor(complex double prevZ, complex double z, int iter, rgb_t *p
 			printf("Error, distX is greater than distZ. distX: %.3f, distZ: %.3f, iter: %i\n", distX, distZ, iter);
 		hsv_to_rgb((distZ - distX) / distZ + 1, .99, .99, p);
 		*/
-		//hsv_to_rgb(atan2(x1, y1), .99, .99, p);
-		hsv_to_rgb(sqrt(zx*zx + zy*zy), .99, .99, p);
+		hsv_to_rgb(atan2(x1, y1) + mVar->color_rotate / 10., .99, .99, p);
+		//hsv_to_rgb(sqrt(zx*zx + zy*zy) + mVar->color_rotate / 10., .99, .99, p);
 	}else {
 		/*
 		double distZ = sqrt((zx - zx2)*(zx - zx2) + (zy - zy2)*(zy - zy2));
@@ -93,8 +93,8 @@ void getSmoothedColor(complex double prevZ, complex double z, int iter, rgb_t *p
 			printf("Error distX: %.3f, distZ: %.3f, iter: %i\n", distX, distZ, iter);
 		hsv_to_rgb((distZ - distX) / distZ + 1, .99, .99, p);
 		*/
-		//hsv_to_rgb(atan2(x2, y2), .99, .99, p);
-		hsv_to_rgb(sqrt(zx*zx + zy*zy), .99, .99, p);
+		hsv_to_rgb(atan2(x2, y2) + mVar->color_rotate / 10., .99, .99, p);
+		//hsv_to_rgb(sqrt(zx*zx + zy*zy) + mVar->color_rotate / 10., .99, .99, p);
 	}
 #else
 	double d1, d2, weight, x, y;
@@ -185,7 +185,6 @@ void updateColors() {
 	if (mVar->color_scheme > 2)
 		return;
 
-	alloc_tex(); 
 	int i, j;
 	rgb_t *px;
 	for(i = 0; i < mVar->height; i++){

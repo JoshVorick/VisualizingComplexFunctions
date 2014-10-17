@@ -3,49 +3,106 @@
 extern void getColor(complex double prevZ, complex double z, int iter, int prev_iter, rgb_t *p);
 extern void hsv_to_rgb(double hue, double sat, double var, rgb_t *pixel);
 
-void calcFractalSet(int width, int height, rgb_t **tex, int **texIter, int screenFlags, int fractalType) {
-	int i, j, iter, prev_iter, bottom, top;
-	//I need to think of less confusing names than 'center' and 'middle'
-	int centerX, centerY; //Pixel coordinates of center (only changes based on width, height, and screenFlags)
-	double complex middle; //real and imaginary parts of the center point (only changes with clicking and zooming)
-	rgb_t *px;
-	double x, y, zoom;
-	double complex curPoint, z, z2, prevZ;
+struct FractalThread {
+	double startX;
+	double startY;
+	double stepX;
+	double stepY;
+	int texXstart;
+	int texYstart;
+	int texXstop;
+	int texYstop;
+	int functionType;
+	rgb_t **tex;
+	int **texIter;
+};
+
+void* calcFractalSetPiece(void *threadData);
+void* calcComplexFunctionPiece(void *threadData);
+
+void calcComplexFunction(int width, int height, rgb_t **tex, int **texIter, int screenFlags, int functionType) {
+	// Split into NUM_THREADS pieces
+	pthread_t threads[NUM_THREADS];
+	struct FractalThread data[NUM_THREADS];
+	int i, bottom, top;
+	double zoom;
+	complex double middle;
+
 	switch (screenFlags) {
-		case WHOLE_SCREEN: 
-			bottom = 0; 
+		case WHOLE_SCREEN:
+			bottom = 0;
 			top = height;
 			break;
-		case TOP_HALF: 
-			bottom = height/2; 
+		case TOP_HALF:
+			bottom = height/2;
 			top = height;
 			break;
-		case BOTTOM_HALF: 
-			bottom = 0; 
+		case BOTTOM_HALF:
+			bottom = 0;
 			top = height/2;
 			break;
 	}
-	centerX = (width) / 2; //Figure out where the origin is
-	centerY = (top + bottom) / 2;
-	switch (fractalType) {
-		case MANDELBROT:
-			zoom = mVar->zoomM;
-			middle = mVar->c;
-			break;
-		case JULIA:
-			zoom = mVar->zoomJ;
-			middle = mVar->z1;
-			break;
-	}	
-	for (i = bottom; i < top; i++) {
-		px = tex[i];
-		y = (i - centerY) * zoom + cimag(middle);
-		for (j = 0; j	< width; j++, px++) {
-			x = (j - centerX) * zoom + creal(middle);
+	if (mVar->function == MANDEL_AND_JULIA) {
+		switch (functionType) {
+			case MANDELBROT:
+				zoom = mVar->zoomM;
+				middle = mVar->c;
+				break;
+			case JULIA:
+				zoom = mVar->zoomJ;
+				middle = mVar->z1;
+				break;
+		}
+	} else {
+		zoom = mVar->zoomF;
+		middle = mVar->centerC;
+		functionType = mVar->function;
+	}
+
+	// Divide the work between the threads
+	for(i = 0; i < NUM_THREADS; i++) {
+		data[i].texYstart = bottom + i;
+		data[i].texYstop = top;
+		data[i].texXstart = 0;
+		data[i].texXstop = width;
+		data[i].stepX = zoom;
+		data[i].startX = zoom * -(width/2) + creal(middle);
+		data[i].stepY = zoom * NUM_THREADS;
+		data[i].startY = zoom * -(top-bottom)/2 + cimag(middle) + i * zoom;
+		data[i].functionType = functionType;
+		data[i].tex = tex;
+		data[i].texIter = texIter;
+	}
+
+	// Start threads
+	for(i = 0; i < NUM_THREADS; i++) {
+		if (mVar->function == MANDEL_AND_JULIA)
+			pthread_create(&threads[i], NULL, calcFractalSetPiece, &data[i]);
+		else
+			pthread_create(&threads[i], NULL, calcComplexFunctionPiece, &data[i]);
+	}
+
+	// Wait for thread to finish
+	for(i = 0; i < NUM_THREADS; i++) {
+		pthread_join(threads[i], NULL);
+	}
+}
+
+// Calculates a section of the function given the starting point, width and height
+void* calcFractalSetPiece(void *threadData) {
+	struct FractalThread *data = threadData;
+	int i, j, iter, prev_iter;
+	rgb_t *px;
+	double x = data->startX;
+	double y = data->startY;
+	double complex curPoint, z, z2, prevZ;
+
+	for (i = data->texYstart; i < data->texYstop; i+= NUM_THREADS) {
+		px = data->tex[i];
+		for (j = data->texXstart; j	< data->texXstop; j++, px++) {
 			curPoint = x + y*I;
-			iter = 0;
-			
-			switch(fractalType) {
+	
+			switch(data->functionType) {
 				case MANDELBROT:
 					z = mVar->z1;
 					break;
@@ -54,10 +111,10 @@ void calcFractalSet(int width, int height, rgb_t **tex, int **texIter, int scree
 					break;
 			}
 			z2 = z * z;
-			for (; iter < mVar->max_iter && cabs(z2) < 4; iter++) {
+			for (iter = 0; iter < mVar->max_iter && cabs(z2) < 16; iter++) {
 				prevZ = z;
 				z = G*z2*z2*z2 + F*z2*z2*z + E*z2*z2 + D*z2*z + C*z2 + B*z;
-				switch (fractalType) {
+				switch (data->functionType) {
 					case MANDELBROT:
 						z += A*curPoint;
 						break;
@@ -67,15 +124,19 @@ void calcFractalSet(int width, int height, rgb_t **tex, int **texIter, int scree
 				}
 				z2 = z * z;
 			}
-			if (texIter != NULL) {
-				texIter[i][j] = *(unsigned short *)px = iter;
+			if (data->texIter != NULL) {
+				data->texIter[i][j] = *(unsigned short *)px = iter;
 				if (mVar->color_scheme == 3 && iter == prev_iter && i > 0)
-						iter = texIter[i-1][j];
+						iter = data->texIter[i-1][j];
 			}
 			getColor(prevZ, z, iter, prev_iter, px);
 			prev_iter = iter;
+			x += data->stepX;
 		}
+		y += data->stepY;
+		x = data->startX;
 	}
+	return NULL;
 }
 
 double complex cool_function(double complex a, double complex b) {
@@ -92,35 +153,22 @@ double complex coolFunction1(double complex a, int iter) {
 	return a;
 }
 
-void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, int functionType, int colorScheme) {
- 	int i, j, bottom, top, centerX, centerY;
+void* calcComplexFunctionPiece(void *threadData) {
+	struct FractalThread *data = threadData;
+ 	int i, j;
 	rgb_t *px;
+	double x = data->startX;
+	double y = data->startY;
 	double complex a;
-	switch (screenFlags) {
-		case WHOLE_SCREEN: 
-			bottom = 0; 
-			top = height;
-			break;
-		case TOP_HALF: 
-			bottom = height/2; 
-			top = height;
-			break;
-		case BOTTOM_HALF: 
-			bottom = 0; 
-			top = height/2;
-			break;
-	}
-	centerX = (width) / 2; //Figure out where the origin is
-	centerY = (top + bottom) / 2;
 	
-	for (i = bottom; i < top; i++) {
-		px = tex[i];
-		for (j = 0; j	< width; j++, px++) {
-			a =  ((j - centerX) * mVar->zoomM + creal(mVar->centerC)) + ((i - centerY) * mVar->zoomM + cimag(mVar->centerC)) * I;
+	for (i = data->texYstart; i < data->texYstop; i += NUM_THREADS) {
+		px = data->tex[i];
+		for (j = data->texXstart; j	< data->texXstop; j++, px++) {
+			a = x + y*I;
       px->r = 0;
       px->g = 0;
       px->b = 0;
-			switch (functionType) {	
+			switch (data->functionType) {	
 				case SINE: 
 					a = csin(a); break;
 				case TANGENT: 
@@ -135,7 +183,7 @@ void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, in
 					a = 3*a + 1; break;
 			}
 			double mag = cabs(a);
-			switch(colorScheme) {
+			switch(mVar->color_scheme) {
 				case 0:
 					hsv_to_rgb((PI + carg(a))/(2*PI), .99, (PI + sin(1.5*PI*mag)) / (2*PI), px); break;
 				case 1:
@@ -147,6 +195,10 @@ void calcComplexFunction(int width, int height, rgb_t **tex, int screenFlags, in
 				case 4:
 					hsv_to_rgb((PI + carg(a))/(2*PI), 0.99, mag, px); break;
 			}
+			x += data->stepX;
 		}
+		y += data->stepY;
+		x = data->startX;
 	}
+	return NULL;
 }
