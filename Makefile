@@ -1,13 +1,18 @@
 FLAGS = -Wall -g
 LFLAGS = -lglut -lGLU -lGL -lm -lpng -lpthread
-OBJS = C/graphics.o C/colors.o C/calculations.o C/saveImage.o C/main.o
+COBJS = C/graphics.o C/colors.o C/calculations.o C/saveImage.o C/main.o
+HOBJS = Haskell/main.o Haskell/Bindings.o Haskell/Display.o
 CXX = gcc
+HXX = ghc
 
 %.o: %.c %.h C/defs.h
 	$(CXX) $(FLAGS) -c -s $< -o $@
 
-Mandelbrot: $(OBJS)
-	$(CXX) $(OBJS) -o $@ $(LFLAGS)
+Cfractal: $(COBJS)
+	$(CXX) $(COBJS) -o $@ $(LFLAGS)
+
+Haskellfractal: $(HOBJS)
+	$(HXX) $(HOBJS) -o $@
 
 clean:
-	rm $(OBJS) Mandelbrot
+	rm $(COBJS) $(HOBJS) Cfractal Haskellfractal
