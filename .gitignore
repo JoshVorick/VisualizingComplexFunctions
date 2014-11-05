@@ -1,6 +1,10 @@
 Mandelbrot
+Cfractal
+fractal
+Haskellfractal
 *.swp
 *.swo
 *.o
+*.hi
 *.png
 *.ppm
