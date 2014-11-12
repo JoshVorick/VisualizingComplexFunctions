@@ -40,29 +40,58 @@ func main() {
 			fmt.Println("Please pass valid numbers as cmd arguments")
 			return
 		}
-		center = complex(-0.5 * zoom + tempX, -0.5 * zoom + tempY)
+		center = complex(tempX, tempY)
 	} else {
-		center = complex(-0.5 * zoom, -0.5 * zoom)
+		center = complex(0 ,0)
 	}
 	zArr := make([][]complex128, pixw, pixw)
 	for i:=0; i<pixw; i++ {
 		zArr[i] = make([]complex128, pixh, pixh)
 	}
 
-	for y:=0; y<pixh; y++ {
-		for x:=0; x<pixw; x++ {
-			zx := zoom * float64(x)/(float64(pixw))
-			zy := zoom * float64(y)/(float64(pixh))
-			c := complex(zx, zy) + center
-			zArr[x][y] = iterate(c, 12800)
-			//fmt.Println(c)
-			if cmplx.Abs(zArr[x][y]) > 4 {
-				fmt.Print("X")
-			} else {
-				fmt.Print(".")
+	var input string
+	var err error
+	for {
+		for y:=0; y<pixh; y++ {
+			for x:=0; x<pixw; x++ {
+				zx := zoom * float64(x)/(float64(pixw))
+				zy := zoom * float64(y)/(float64(pixh))
+				c := complex(zx, zy) + center - complex(0.5*zoom, 0.5*zoom)
+				zArr[x][y] = iterate(c, 1024)
+				//fmt.Println(c)
+				if cmplx.Abs(zArr[x][y]) > 4 {
+					fmt.Print("X")
+				} else {
+					fmt.Print(".")
+				}
 			}
+			fmt.Println()
+		}
+
+		fmt.Println()
+		fmt.Print("Please enter a command: ")
+		_, err = fmt.Scanln(&input)
+		if err != nil {
+			continue
 		}
 		fmt.Println()
+
+		switch input {
+		default:
+			fmt.Println("unrecognized command. Please enter 'zoom in', 'zoom out', 'up', 'down', 'left', or 'right'")
+		case "zoom in", "zoom", "+", "a", "z":
+			zoom /= 2
+		case "zoom out", "-", "s", "x":
+			zoom *= 2
+		case "left", "l", "<":
+			center -= complex(zoom/3, 0)
+		case "right", "r", ">":
+			center += complex(zoom/3, 0)
+		case "up", "u", "8", "^":
+			center -= complex(0, zoom/3)
+		case "down", "d", "2":
+			center += complex(0, zoom/3)
+		}
 	}
 }
 
