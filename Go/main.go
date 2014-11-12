@@ -4,38 +4,32 @@ import "fmt"
 import "os"
 import "strconv"
 import "math/cmplx"
+import "golang.org/x/crypto/ssh/terminal"
 
 func main() {
 	var pixh, pixw int
 	var zoom float64
 	var center complex128
+	var err error
+
+	// Get cmd line arguments
+	// format: ./main zoom centerx centery
 	args := os.Args
-	if len(args) > 2 {
-		tempw, err := strconv.ParseInt(args[1], 10, 0)
-		temph, err := strconv.ParseInt(args[2], 10, 0)
+	// Parse arugments for zoom
+	if len(args) > 1 {
+		zoom, err = strconv.ParseFloat(args[1], 64)
 		if err != nil {
 			fmt.Println("Please pass valid numbers as cmd arguments")
 			return
 		}
-		pixw = int(tempw)
-		pixh = int(temph)
-	} else {
-		pixh = 50
-		pixw = 100
-	}
-	if len(args) > 3 {
-		tempZoom, err := strconv.ParseFloat(args[3], 64)
-		if err != nil {
-			fmt.Println("Please pass valid numbers as cmd arguments")
-			return
-		}
-		zoom = tempZoom
 	} else {
 		zoom = 4.0
 	}
-	if len(args) > 5 {
-		tempX, err := strconv.ParseFloat(args[4], 64)
-		tempY, err := strconv.ParseFloat(args[5], 64)
+	// Parse arguments for center
+	if len(args) > 3 {
+		var tempX, tempY float64
+		tempX, err = strconv.ParseFloat(args[2], 64)
+		tempY, err = strconv.ParseFloat(args[3], 64)
 		if err != nil {
 			fmt.Println("Please pass valid numbers as cmd arguments")
 			return
@@ -44,21 +38,31 @@ func main() {
 	} else {
 		center = complex(0 ,0)
 	}
-	zArr := make([][]complex128, pixw, pixw)
-	for i:=0; i<pixw; i++ {
-		zArr[i] = make([]complex128, pixh, pixh)
-	}
 
+	// main loop
 	var input string
-	var err error
 	for {
+
+		// Get terminal size, set pixw and pixh accordingly
+		pixw, pixh, err = terminal.GetSize(0)
+		if err != nil {
+			panic(err)
+		}
+
+		// Create zArr to be the size of the terminal
+		zArr := make([][]complex128, pixw, pixw)
+		for i:=0; i<pixw; i++ {
+			zArr[i] = make([]complex128, pixh, pixh)
+		}
+
+		// Calculate mandelbrot for all point
 		for y:=0; y<pixh; y++ {
 			for x:=0; x<pixw; x++ {
-				zx := zoom * float64(x)/(float64(pixw))
-				zy := zoom * float64(y)/(float64(pixh))
-				c := complex(zx, zy) + center - complex(0.5*zoom, 0.5*zoom)
+				cx := zoom * float64(x)/(float64(pixw))
+				cy := zoom * float64(y)/(float64(pixh))
+				c := complex(cx, cy) + center - complex(0.5*zoom, 0.5*zoom) // '- complex(0.5*zoom, 0.5*zoom) offsets center to be the bottom left pixel
+				// figure out behavior of z at this value of c and print it
 				zArr[x][y] = iterate(c, 1024)
-				//fmt.Println(c)
 				if cmplx.Abs(zArr[x][y]) > 4 {
 					fmt.Print("X")
 				} else {
@@ -68,6 +72,7 @@ func main() {
 			fmt.Println()
 		}
 
+		// Get user input
 		fmt.Println()
 		fmt.Print("Please enter a command: ")
 		_, err = fmt.Scanln(&input)
@@ -76,6 +81,7 @@ func main() {
 		}
 		fmt.Println()
 
+		// Process input
 		switch input {
 		default:
 			fmt.Println("unrecognized command. Please enter 'zoom in', 'zoom out', 'up', 'down', 'left', or 'right'")
